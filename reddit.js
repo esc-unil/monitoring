@@ -3,20 +3,12 @@
 var querystring = require('querystring');
 var request = require('request');
 var extend = require('extend');
-var async = require("async");
 
-var a = {
-    limit: 100, //max 100/requête
-    q: 'steroid',
-    sort: 'new',
-    restrict_sr: 'on',
-    t: 'all',
-    after: null
-};
-
-search('Steroidsourcetalk', a, function (err, res, after, before) {
-    console.log(JSON.stringify(res));
-});
+function redditSearch(keyword, num, opt_args, callback) {
+//Recherche de messages sur Reddit
+// Informations sur les arguments optionnels (opt_args): https://www.reddit.com/dev/api#GET_search
+    subredditSearch(keyword, num, null, opt_args, callback);
+}
 
 function subredditSearch(keyword, num, subreddit, opt_args, callback) {
 //Recherche de messages dans un subreddit spécifique
@@ -25,6 +17,7 @@ function subredditSearch(keyword, num, subreddit, opt_args, callback) {
         callback = opt_args;
         opt_args = {};
     }
+    var args = {limit: num, q: keyword};
     if (opt_args.sort === undefined) {
         opt_args.sort = 'new';
     }
@@ -37,9 +30,8 @@ function subredditSearch(keyword, num, subreddit, opt_args, callback) {
     if (opt_args.after === undefined) {
         opt_args.after = null;
     }
-    var args = {limit: num, q: keyword};
     extend(args, opt_args);
-
+    search(subreddit, args, callback);
 }
 
 
@@ -77,7 +69,7 @@ function selectData(data) {
         obj.subreddit = item.subreddit;
         obj.subreddit_id = item.subreddit_id;
         obj.author = item.author;
-        obj.created = new Date(item.created * 1000); //transforme le timestamp en date js
+        obj.created = new Date(item.created * 1000);
         obj.title = item.title;
         obj.text = item.selftext;
         obj.num_comments = item.num_comments;
@@ -89,3 +81,6 @@ function selectData(data) {
     }
     return results;
 }
+
+exports.subredditSearch = subredditSearch;
+exports.redditSearch = redditSearch;
