@@ -1,0 +1,10 @@
+{
+	yahooKey : "",
+	yahooSecret : "",
+
+	googleKey : "",
+	googleSearchEngine : "",
+
+	bingKey : ""
+
+}
