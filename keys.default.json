@@ -1,10 +1,7 @@
 {
-	yahooKey : "",
-	yahooSecret : "",
-
-	googleKey : "",
-	googleSearchEngine : "",
-
-	bingKey : ""
-
+  yahooKey: "",
+  yahooSecret: "",
+  googleKey: "",
+  googleSearchEngine: "",
+  bingKey: ""
 }
