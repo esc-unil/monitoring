@@ -20,7 +20,6 @@ var a = {
 //search(null, a, function(err, res, after, before){console.log(JSON.stringify(res));});
 go('Steroidsourcetalk', a, function(err, res, after, before){console.log(JSON.stringify(res));});
 
-
 function subredditSearch(keyword, num, subreddit, opt_args, callback){
 //Recherche de messages dans un subreddit spécifique
 // Informations sur les arguments optionnels (opt_args): https://www.reddit.com/dev/api#GET_search
