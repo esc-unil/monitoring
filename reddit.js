@@ -5,13 +5,13 @@ var request = require('request');
 var extend = require('extend');
 
 function redditSearch(keyword, num, opt_args, callback) {
-//Recherche de messages sur Reddit
+// Recherche de messages sur Reddit
 // Informations sur les arguments optionnels (opt_args): https://www.reddit.com/dev/api#GET_search
     subredditSearch(keyword, num, null, opt_args, callback);
 }
 
 function subredditSearch(keyword, num, subreddit, opt_args, callback) {
-//Recherche de messages dans un subreddit spécifique
+// Recherche de messages dans un subreddit spécifique
 // Informations sur les arguments optionnels (opt_args): https://www.reddit.com/dev/api#GET_search
     if (typeof opt_args === 'function') {
         callback = opt_args;
