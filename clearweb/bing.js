@@ -7,7 +7,7 @@ var querystring = require('querystring');
 var request = require('request');
 var extend = require('extend');
 var async = require("async");
-var keys = require('./keys.json');
+var keys = require('./../keys.json');
 
 var bingKey = keys.bingKey;
 

@@ -7,7 +7,7 @@ var querystring = require('querystring');
 var extend = require('extend');
 var async = require("async");
 var oAuth = require('oauth');
-var keys = require('./keys.json');
+var keys = require('./../keys.json');
 
 var yahooKey = keys.yahooKey;
 var yahooSecret = keys.yahooSecret;
