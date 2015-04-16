@@ -4,7 +4,6 @@ var querystring = require('querystring');
 var request = require('request');
 var extend = require('extend');
 var async = require("async");
-var keys = require('./keys.json');
 
 var a = {
     limit: 502, //max 100/requête
