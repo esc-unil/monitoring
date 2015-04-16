@@ -1,5 +1,8 @@
 'use strict';
-
+/**
+ * Created by tpineau
+ */
+    
 var querystring = require('querystring');
 var extend = require('extend');
 var async = require("async");

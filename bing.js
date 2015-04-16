@@ -1,4 +1,7 @@
 'use strict';
+/**
+ * Created by tpineau
+ */
 
 var querystring = require('querystring');
 var request = require('request');
