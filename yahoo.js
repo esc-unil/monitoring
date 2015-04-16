@@ -138,6 +138,3 @@ function listRequest(type, args) {
 
 exports.webSearch = webSearch;
 exports.imagesSearch = imagesSearch;
-
-
-		
