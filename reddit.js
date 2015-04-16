@@ -6,16 +6,15 @@ var extend = require('extend');
 var async = require("async");
 
 var a = {
-    limit: 502, //max 100/requête
+    limit: 100, //max 100/requête
     q: 'steroid',
     sort: 'new',
     restrict_sr: 'on',
     t: 'all',
     after: null
 };
-//search('Steroidsourcetalk', a, function(err, res, after, before){console.log(JSON.stringify(res));});
-//search(null, a, function(err, res, after, before){console.log(JSON.stringify(res));});
-go('Steroidsourcetalk', a, function (err, res, after, before) {
+
+search('Steroidsourcetalk', a, function (err, res, after, before) {
     console.log(JSON.stringify(res));
 });
 
@@ -24,7 +23,7 @@ function subredditSearch(keyword, num, subreddit, opt_args, callback) {
 // Informations sur les arguments optionnels (opt_args): https://www.reddit.com/dev/api#GET_search
     if (typeof opt_args === 'function') {
         callback = opt_args;
-        opt_args = {sort: 'new', restrict_sr: 'on', t: 'all', after: null};
+        opt_args = {};
     }
     if (opt_args.sort === undefined) {
         opt_args.sort = 'new';
@@ -90,43 +89,3 @@ function selectData(data) {
     }
     return results;
 }
-
-/*
- boucle pour obtenir plus de 100 résultats, ! si moins de réponses existantes -> reprend les premiers résultats!
-
- go('Steroidsourcetalk', a, function(err, res, after, before){console.log(JSON.stringify(res));});
- function go(subreddit, args, callback){
- // lance le nombre de requêtes search afin d'obtenir le nombre de resultat souhaités
- global.argum = args;
- var arr = listRequest(args);
- async.concatSeries(arr,
- function(item, callback){
- args.limit = item.num;
- search(subreddit, args, function(err, result, after){
- args.after = after;
- callback(err, result);}
- );
- },
- function(err, response) {
- if (err) callback(err);
- callback(null, response);
- }
- );
- }
-
- function listRequest(args){
- // Permet de depasser la limitation de résultat des requêtes (100 par requête)
- var num = args.limit;
- var nbRequest = Math.ceil(num/50);
- var table = [];
- for (var i=1; i <= nbRequest; i++){
- if (i == nbRequest){
- if (num%50 === 0) {c = 50;}
- else {var c = num%50;}
- }
- else {var c = 50;}
- table.push({num:c});
- }
- return table;
- }
- */
