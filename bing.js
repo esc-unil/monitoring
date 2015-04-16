@@ -8,7 +8,7 @@ var querystring = require('querystring');
 var request = require('request');
 var extend = require('extend');
 var async = require("async");
-var keys = require('./keys'); //fichier keys.js contenant les clefs des APIs
+var keys = require('./keys.json');
 
 var bingKey = keys.bingKey;
 

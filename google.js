@@ -8,7 +8,7 @@ var querystring = require('querystring');
 var extend = require('extend');
 var async = require("async");
 var googleapis = require('googleapis');
-var keys = require('./keys'); //fichier keys.js contenant les clefs des APIs
+var keys = require('./keys.json');
 
 var customsearch = googleapis.customsearch('v1');
 

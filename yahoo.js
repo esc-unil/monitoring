@@ -8,7 +8,7 @@ var querystring = require('querystring');
 var extend = require('extend');
 var async = require("async");
 var oAuth = require('oauth');
-var keys = require('./keys'); //fichier keys.js contenant les clefs des APIs
+var keys = require('./keys.json');
 
 var yahooKey = keys.yahooKey;
 var yahooSecret = keys.yahooSecret;
