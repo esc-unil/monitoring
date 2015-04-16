@@ -13,7 +13,6 @@
     "extend": "^2.0.0",
     "googleapis": "^2.0.2",
     "oauth": "^0.9.12",
-    "request": "^2.55.0",
-    "sleep": "^2.0.0"
+    "request": "^2.55.0"
   }
 }

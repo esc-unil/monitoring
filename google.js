@@ -6,7 +6,6 @@ var querystring = require('querystring');
 var extend = require('extend');
 var async = require("async");
 var googleapis = require('googleapis');
-var sleep = require('sleep');
 var keys = require('./keys'); //fichier keys.js contenant les clefs des APIs
 
 var customsearch = googleapis.customsearch('v1');
@@ -70,8 +69,9 @@ function go(args, callback){
 			function(item, callback){
 				args.num = item.num;
 				args.start = item.start;
-				sleep.sleep(1);  // vitesse 1.0 requests/second/user
-				search(args, callback);
+				setTimeout(function () {
+					search(args, callback);
+				}, 1000);
 			}, 
 			function(err, response) {
 				if (err) callback(err);
