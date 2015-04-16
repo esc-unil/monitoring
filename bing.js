@@ -1,9 +1,5 @@
 'use strict';
 
-/*
- auteur: tpineau
- */
-
 var querystring = require('querystring');
 var request = require('request');
 var extend = require('extend');

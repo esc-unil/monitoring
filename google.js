@@ -1,9 +1,5 @@
 'use strict';
 
-/*
- auteur: tpineau
- */
-
 var querystring = require('querystring');
 var extend = require('extend');
 var async = require("async");
