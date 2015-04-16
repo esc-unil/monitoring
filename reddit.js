@@ -1,3 +1,5 @@
+'use strict';
+
 /*
 auteur: tpineau
 */
@@ -55,7 +57,7 @@ function search(subreddit, args, callback) {
 function selectData(data){
 	var results = [];
 		for (var i= 0; i < data.length; i++){
-			item = data[i].data;
+			var item = data[i].data;
 			var obj = {};
 			obj.id = item.id;
 			obj.url = item.url;
