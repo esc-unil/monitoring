@@ -128,9 +128,8 @@ function search(type, args, callback) {
     });
 }
 
-
 function listRequest(args) {
-// Permet de depasser la limitation de résultat des requêtes (10 par requête)
+// Permet de depasser la limitation de résultat des requêtes (50 par requête)
     var num = args.top;
     var nbRequest = Math.ceil(num / 50);
     var table = [];

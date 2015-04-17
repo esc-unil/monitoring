@@ -1,6 +1,6 @@
 'use strict';
 /**
- * Created by Thomas
+ * Created by tpineau
  */
 
 var querystring = require('querystring');
@@ -63,6 +63,7 @@ function searchID(id, accessToken, callback){
         if (err) {callback(err);}
         var result = JSON.parse(body);
         if (!err && response.statusCode == 200) {callback(null, result);}
+        else {callback();}
     });
 }
 
