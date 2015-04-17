@@ -116,7 +116,7 @@ function search(type, args, callback) {
     var webSearchUrl = 'https://Basic:' + bingKey + '@api.datamarket.azure.com/Data.ashx/Bing/Search/' + type + '?';
     var args = querystring.stringify(args, '&$');
     var url = webSearchUrl + args;
-    var req = request(url, function (err, response, body) {
+    request(url, function (err, response, body) {
         if (err) {
             callback(err)
         }
@@ -125,7 +125,7 @@ function search(type, args, callback) {
         if (!err && response.statusCode == 200) {
             callback(null, result);
         }
-    })
+    });
 }
 
 
