@@ -34,6 +34,17 @@ function peopleSearch(keyword, num, opt_args, callback) {
     go('people', args, callback);
 }
 
+function activitiesUser(id, num, opt_args, callback) {
+// Fonction de recherche d'activités d'un utilisateur particulier sur Google+
+// Informations sur les arguments optionnels (opt_args): https://developers.google.com/+/api/latest/activities/list?hl=fr
+    if (typeof opt_args === 'function') {callback = opt_args; opt_args = {};}
+    var args = {userId: id, maxResults: num, collection:'public', auth: googleKey};
+    if (opt_args.pageToken === undefined) {opt_args.pageToken = null;}
+    extend(args, opt_args);
+    go('activitiesUser', args, callback);
+}
+
+
 function go(type, args, callback) {
     var args = args;
     var arr = listRequest(type, args);
@@ -57,17 +68,27 @@ function go(type, args, callback) {
 
 function search(type, args, callback) {
 // recherche en utilisant l'API Google+ de Google
-    if (type === 'activities'){ var request = plus.activities;}
+    if (type === 'activities' || type === 'activitiesUser'){ var request = plus.activities;}
     if (type === 'people'){ var request = plus.people;}
-    request.search(args, function (err, data) {
-        if (err) callback(err);
-        callback(null, data.items, data.nextPageToken);
-    });
+    if (type === 'activities' || type ==='people') {
+        request.search(args, function (err, data) {
+            if (err) callback(err);
+            callback(null, data.items, data.nextPageToken);
+        });
+    }
+    if (type === 'activitiesUser') {
+        request.list(args, function (err, data) {
+            if (err) callback(err);
+            callback(null, data.items, data.nextPageToken);
+        });
+    }
 }
+
 
 function listRequest(type, args) {
 // Permet de depasser la limitation de résultat des requêtes (20 par requête)
     if (type === 'activities' || type ==='people'){var max = 20;}
+    if (type === 'activitiesUser') {var max = 100;}
     var num = args.maxResults;
     var nbRequest = Math.ceil(num / max);
     var table = [];
@@ -86,3 +107,4 @@ function listRequest(type, args) {
 
 exports.activitiesSearch = activitiesSearch;
 exports.peopleSearch = peopleSearch;
+exports.activitiesUser = activitiesUser;
