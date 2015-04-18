@@ -6,13 +6,14 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "author": "",
+  "author": "Thomas Pineau",
   "license": "ISC",
   "dependencies": {
     "async": "^0.9.0",
     "extend": "^2.0.0",
     "googleapis": "^2.0.2",
     "oauth": "^0.9.12",
+    "querystring": "^0.2.0",
     "request": "^2.55.0"
   }
 }

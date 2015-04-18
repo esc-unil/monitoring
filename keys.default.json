@@ -1,9 +1,17 @@
 {
-  "yahooKey": "",
-  "yahooSecret": "",
+  "bingKey": "",
+
   "googleKey": "",
   "googleSearchEngine": "",
-  "bingKey": "",
+
   "facebookKey": "",
-  "facebookSecret": ""
+  "facebookSecret": "",
+
+  "twitterAccessToken": "",
+  "twitterAccessTokenSecret": "",
+  "twitterConsumerKey": "",
+  "twitterConsumerSecret": "",
+
+  "yahooKey": "",
+  "yahooSecret": ""
 }

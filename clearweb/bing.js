@@ -117,10 +117,7 @@ function search(type, args, callback) {
     var args = querystring.stringify(args, '&$');
     var url = webSearchUrl + args;
     request(url, function (err, response, body) {
-        if (err) {
-            callback(err)
-        }
-        ;
+        if (err) {callback(err)}
         var result = JSON.parse(body).d.results;
         if (!err && response.statusCode == 200) {
             callback(null, result);
@@ -135,16 +132,10 @@ function listRequest(args) {
     var table = [];
     for (var i = 1; i <= nbRequest; i++) {
         if (i == nbRequest) {
-            if (num % 50 === 0) {
-                c = 50;
-            }
-            else {
-                var c = num % 50;
-            }
+            if (num % 50 === 0) {c = 50;}
+            else {var c = num % 50;}
         }
-        else {
-            var c = 50;
-        }
+        else {var c = 50;}
         table.push({num: c, start: (i - 1) * 50});
     }
     return table;

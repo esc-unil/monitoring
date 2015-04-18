@@ -101,16 +101,10 @@ function listRequest(args) {
     var table = [];
     for (var i = 1; i <= nbRequest; i++) {
         if (i == nbRequest) {
-            if (num % 10 === 0) {
-                c = 10;
-            }
-            else {
-                var c = num % 10;
-            }
+            if (num % 10 === 0) {c = 10;}
+            else {var c = num % 10;}
         }
-        else {
-            var c = 10;
-        }
+        else {var c = 10;}
         table.push({num: c, start: (i - 1) * 10 + 1});
     }
     return table;
