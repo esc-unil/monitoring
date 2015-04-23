@@ -7,8 +7,6 @@ var querystring = require('querystring');
 var request = require('request');
 var extend = require('extend');
 
-redditSearch('keyword', 5, function(err,res){console.log(JSON.stringify(res));});
-
 function redditSearch(keyword, num, opt_args, callback) {
 // Recherche de messages sur Reddit
 // Informations sur les arguments optionnels (opt_args): https://www.reddit.com/dev/api#GET_search
