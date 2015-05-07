@@ -16,9 +16,11 @@ var mongodb = require('mongodb');
 var mongoClient = mongodb.MongoClient;
 
 
-function insert(db, col, object, callback){
+function insert(col, object, callback){
     //Insere un objet dans une base de donnee (db) mongoDB, dans la collection (col)
-    var url = 'mongodb://localhost:27017/' + db;
+    var path = 'mongodb://localhost:27017/';
+    var db = 'detection';
+    var url =  path + db;
     mongoClient.connect(url, function(err, db) {
         if (err) callback(err);
         console.log('Connected correctly to server');
@@ -39,7 +41,7 @@ function googleWebSearch(keyword, num, opt_args, callback){
     }
     google.webSearch(keyword, num, opt_args, function(err, result){
         if (err) callback(err);
-        insert('detection', 'google', result, callback);
+        insert('google', result, callback);
     });
 }
 
@@ -50,7 +52,7 @@ function googleImagesSearch(keyword, num, opt_args, callback){
     }
     google.imagesSearch(keyword, num, opt_args, function(err, result){
         if (err) callback(err);
-        insert('detection', 'google', result, callback);
+        insert('google', result, callback);
     });
 }
 
