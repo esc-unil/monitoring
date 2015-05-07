@@ -7,7 +7,6 @@ var extend = require('extend');
 var async = require("async");
 var googleapis = require('googleapis');
 var keys = require('./../keys.json');
-var mongodb = require('./../mongo.js');
 
 var customsearch = googleapis.customsearch('v1');
 var googleSearchEngine = keys.googleSearchEngine;
@@ -31,7 +30,7 @@ function webSearch(keyword, num, opt_args, callback) {
             args : opt_args,
             result: response
         };
-        mongodb.insert('detection', 'google', results, callback);
+        callback(null, results);
     });
 }
 
@@ -53,7 +52,7 @@ function imagesSearch(keyword, num, opt_args, callback) {
             args : opt_args,
             result: response
         };
-        mongodb.insert('detection', 'google', results, callback);
+        callback(null, results);
     });
 }
 
@@ -101,5 +100,3 @@ function listRequest(args) {
 
 exports.webSearch = webSearch;
 exports.imagesSearch = imagesSearch;
-
-webSearch('buy steroid', 1, function(err,res){if (err) {console.log(err);}})
