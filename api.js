@@ -3,7 +3,7 @@
  * Created by tpineau
  */
 
-var google = require('./clearweb/google2.js'); //!!!!!!!!!!
+var google = require('./clearweb/google.js'); //!!!!!!!!!!
 var bing = require('./clearweb/bing.js');
 var yahoo = require('./clearweb/yahoo.js');
 var facebook = require('./clearweb/facebook.js');
@@ -17,21 +17,25 @@ var mongoClient = mongodb.MongoClient;
 
 
 function insert(col, object, callback){
-    //Insere un objet dans une base de donnee (db) mongoDB, dans la collection (col)
+    //Insere un objet dans une base de donnee mongoDB, dans la collection (col)
     var path = 'mongodb://localhost:27017/';
-    var db = 'detection';
+    var db =  'detection';
     var url =  path + db;
     mongoClient.connect(url, function(err, db) {
         if (err) callback(err);
-        console.log('Connected correctly to server');
-        var collection = db.collection(col);
-        collection.insert(object, function(err){
-            if (err) callback(err);
-            console.log( object.date + ' -- ' + object.keywords+ ': Inserted request into the ' + col + ' collection (length results: ' + object.result.length.toString() + ')')
-            db.close();
-            callback(null, object);
-        });
-        });
+        else {
+            console.log('Connected correctly to server');
+            var collection = db.collection(col);
+            collection.insert(object, function(err){
+                if (err) callback(err);
+                else {
+                    console.log(object.date + ' -- ' + object.keywords + ': Inserted request into the ' + col + ' collection (length results: ' + object.result.length.toString() + ')')
+                    db.close();
+                    callback(null, object);
+                }
+             });
+        }
+    });
 }
 
 function googleWebSearch(keyword, num, opt_args, callback){
@@ -41,6 +45,7 @@ function googleWebSearch(keyword, num, opt_args, callback){
     }
     google.webSearch(keyword, num, opt_args, function(err, result){
         if (err) callback(err);
+        result.integrate = false;
         insert('google', result, callback);
     });
 }
@@ -52,13 +57,14 @@ function googleImagesSearch(keyword, num, opt_args, callback){
     }
     google.imagesSearch(keyword, num, opt_args, function(err, result){
         if (err) callback(err);
+        result.integrate = false;
         insert('google', result, callback);
     });
 }
 
 
 
-//googleImagesSearch('buy steroid', 1, function(err, res){if (err) console.log(err);})
+googleImagesSearch('buy steroid', 1, function(err, res){if (err) console.log(err)})
 
 
 

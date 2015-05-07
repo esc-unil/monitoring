@@ -9,7 +9,6 @@ var googleapis = require('googleapis');
 var keys = require('./../keys.json');
 
 var customsearch = googleapis.customsearch('v1');
-
 var googleSearchEngine = keys.googleSearchEngine;
 var googleKey = keys.googleKey;
 
@@ -24,18 +23,18 @@ function webSearch(keyword, num, opt_args, callback) {
     extend(args, opt_args);
     go(args, function (err, response) {
         if (err) callback(err);
-        var results = [];
-        for (var i = 0; i < response.length; i++) {
-            var obj = {request: {}};
-            obj.url = response[i].link;
-            obj.request.type = 'web';
-            obj.request.keyword = keyword;
-            obj.request.ranking = i + 1;
-            obj.request.platform = 'Google';
-            obj.request.date = new Date();
-            obj.request.args = opt_args;
-            results.push(obj);
+        var result = [];
+        for (var i = 0; i < response.length; i++) { //retire le pagemap non utilisé et faisant planter l'intégration dans mongodb
+            delete response[i].pagemap;
+            result.push(response[i]);
         }
+        var results = {
+            keywords: keyword,
+            date : new Date(),
+            type : 'web',
+            args : opt_args,
+            result: result
+        };
         callback(null, results);
     });
 }
@@ -51,19 +50,18 @@ function imagesSearch(keyword, num, opt_args, callback) {
     extend(args, opt_args);
     go(args, function (err, response) {
         if (err) callback(err);
-        var results = [];
-        for (var i = 0; i < response.length; i++) {
-            var obj = {request: {}};
-            obj.url = response[i].image.contextLink;
-            obj.image = response[i].link;
-            obj.request.type = 'image';
-            obj.request.keyword = keyword;
-            obj.request.ranking = i + 1;
-            obj.request.platform = 'Google';
-            obj.request.date = new Date();
-            obj.request.args = opt_args;
-            results.push(obj);
+        var result = [];
+        for (var i = 0; i < response.length; i++) { //retire le pagemap non utilisé et faisant planter l'intégration dans mongodb
+            delete response[i].pagemap;
+            result.push(response[i]);
         }
+        var results = {
+            keywords: keyword,
+            date : new Date(),
+            type : 'images',
+            args : opt_args,
+            result: result
+        };
         callback(null, results);
     });
 }
