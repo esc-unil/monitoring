@@ -23,19 +23,16 @@ function webSearch(keyword, num, opt_args, callback) {
     extend(args, opt_args);
     go('web', args, function (err, response) {
         if (err) callback(err);
-        var results = [];
-        for (var i = 0; i < response.length; i++) {
-            var obj = {request: {}};
-            obj.url = response[i].url;
-            obj.request.type = 'web';
-            obj.request.keyword = keyword;
-            obj.request.ranking = i + 1;
-            obj.request.platform = 'Yahoo';
-            obj.request.date = new Date();
-            obj.request.args = opt_args;
-            results.push(obj);
+        else {
+            var results = {
+                keywords: keyword,
+                date: new Date(),
+                type: 'web',
+                args: opt_args,
+                result: response
+            };
+            callback(null, results);
         }
-        callback(null, results);
     });
 }
 
@@ -50,20 +47,16 @@ function imagesSearch(keyword, num, opt_args, callback) {
     extend(args, opt_args);
     go('images', args, function (err, response) {
         if (err) callback(err);
-        var results = [];
-        for (var i = 0; i < response.length; i++) {
-            var obj = {request: {}};
-            obj.url = response[i].refererurl;
-            obj.image = response[i].url;
-            obj.request.type = 'image';
-            obj.request.keyword = keyword;
-            obj.request.ranking = i + 1;
-            obj.request.platform = 'Yahoo';
-            obj.request.date = new Date();
-            obj.request.args = opt_args;
-            results.push(obj);
+        else {
+            var results = {
+                keywords: keyword,
+                date: new Date(),
+                type: 'images',
+                args: opt_args,
+                result: response
+            };
+            callback(null, results);
         }
-        callback(null, results);
     });
 }
 
@@ -77,8 +70,8 @@ function go(type, args, callback) {
             search(type, args, callback);
         },
         function (err, response) {
-            if (err) callback(err);
-            callback(null, response);
+            if (err) {callback(err);}
+            else {callback(null, response);}
         }
     );
 }
@@ -92,10 +85,18 @@ function search(type, args, callback) {
     oa.setClientOptions({requestTokenHttpMethod: 'GET'});
     oa.getProtectedResource(finalUrl, "GET", '', '', function (err, data, response) {
         if (err) callback(err);
-        data = JSON.parse(data);
-        if (type === 'web') {callback(null, data.bossresponse.web.results);}
-        else if (type === 'images') {callback(null, data.bossresponse.images.results);}
-        else {callback(null, data);}
+        else {
+            data = JSON.parse(data);
+            if (type === 'web') {
+                callback(null, data.bossresponse.web.results);
+            }
+            else if (type === 'images') {
+                callback(null, data.bossresponse.images.results);
+            }
+            else {
+                callback(null, data);
+            }
+        }
     });
 }
 
@@ -110,7 +111,7 @@ function listRequest(type, args) {
     var table = [];
     for (var i = 1; i <= nbRequest; i++) {
         if (i == nbRequest) {
-            if (num % 10 === 0) {c = max;}
+            if (num % max === 0) {c = max;}
             else {var c = num % max;}
         }
         else {var c = max;}
