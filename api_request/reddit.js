@@ -53,15 +53,14 @@ function search(subreddit, args, callback) {
         }
         else {
             var data = JSON.parse(body).data;
-            var argums = args;
-            argums.subbreddit = subreddit;
             var results = [];
             for (var i = 0; i < data.children.length; i++) {
                 var post = data.children[i].data;
                 var result = {
                     keywords: args.q,
                     date: new Date(),
-                    args: argums,
+                    type: subreddit,
+                    args: args,
                     result: post
                 };
                 results.push(result);

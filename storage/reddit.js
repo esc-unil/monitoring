@@ -5,11 +5,12 @@
  * Script de recherche de postes sur Reddit et stockage des informations dans une banque de donnée MongoDB
  * dans la collection reddit (les informations sur la DB sont stockées dans le fichier keys.json).
  *
- * Chaque postes correspond à un objet avec les paramètres suivants:
+ * Chaques postes correspond à un objet avec les paramètres suivants:
  *  {
  *    _id :         le numéro d'identification de l'objet
  *    keywords:     le/les mots-clefs utilisés lors de la requête
  *    date:         la date de la requête
+ *    type:         nom du subreddit ciblé pour la requête (null si non indiqué)
  *    args:         le/les arguments utilisés lors de la requête
  *    result:       les données du poste
  *    integrate:    indique si l'objet à déjà été parsé et intégré dans la collection d'URLs (0 si non)
