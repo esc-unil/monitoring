@@ -26,7 +26,9 @@ function insert(col, object, callback){
             collection.insert(object, function(err){
                 if (err) callback(err);
                 else {
-                    console.log(object.date + ' -- ' + object.keywords + ': Inserted request into the ' + col + ' collection (length results: ' + object.result.length.toString() + ')')
+                    if (object.result != undefined){ var length = object.result.length.toString();}
+                    else {var length = object.length.toString();}
+                    console.log(new Date() + ': Inserted request into the ' + col + ' collection (length results: ' + length + ')')
                     db.close();
                     callback(null, object);
                 }

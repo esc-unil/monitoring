@@ -47,7 +47,7 @@ function search(subreddit, args, callback) {
         var webSearchUrl = 'http://www.reddit.com/r/' + subreddit + '/search.json?';
     }
     var url = webSearchUrl + querystring.stringify(args);
-    var req = request(url, function (err, response, body) {
+    request(url, function (err, response, body) {
         if (err) {
             callback(err)
         }
