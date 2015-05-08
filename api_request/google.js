@@ -24,11 +24,13 @@ function webSearch(keyword, num, opt_args, callback) {
     go(args, function (err, response) {
         if (err) callback(err);
         else {
+            delete args.auth;
+            delete args.cx;
             var results = {
                 keywords: keyword,
                 date: new Date(),
                 type: 'web',
-                args: opt_args,
+                args: args,
                 result: response
             };
             callback(null, results);
@@ -48,11 +50,13 @@ function imagesSearch(keyword, num, opt_args, callback) {
     go(args, function (err, response) {
         if (err) callback(err);
         else {
+            delete args.auth;
+            delete args.cx;
             var results = {
                 keywords: keyword,
                 date: new Date(),
                 type: 'images',
-                args: opt_args,
+                args: args,
                 result: response
             };
             callback(null, results);

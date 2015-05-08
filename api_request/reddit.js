@@ -53,7 +53,6 @@ function search(subreddit, args, callback) {
         }
         else {
             var data = JSON.parse(body).data;
-
             var argums = args;
             argums.subbreddit = subreddit;
             var results = [];
@@ -62,13 +61,11 @@ function search(subreddit, args, callback) {
                 var result = {
                     keywords: args.q,
                     date: new Date(),
-                    type: 'web',
                     args: argums,
                     result: post
                 };
                 results.push(result);
             }
-
             var after = data.after;
             callback(null, results, after);
         }

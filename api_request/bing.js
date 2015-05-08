@@ -27,7 +27,7 @@ function webSearch(keyword, num, opt_args, callback) {
                 keywords: keyword,
                 date: new Date(),
                 type: 'web',
-                args: opt_args,
+                args: args,
                 result: response
             };
             callback(null, results);
@@ -51,7 +51,7 @@ function imagesSearch(keyword, num, opt_args, callback) {
                 keywords: keyword,
                 date: new Date(),
                 type: 'images',
-                args: opt_args,
+                args: args,
                 result: response
             };
             callback(null, results);
@@ -75,7 +75,7 @@ function videosSearch(keyword, num, opt_args, callback) {
                 keywords: keyword,
                 date: new Date(),
                 type: 'videos',
-                args: opt_args,
+                args: args,
                 result: response
             };
             callback(null, results);

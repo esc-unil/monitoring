@@ -9,7 +9,7 @@
  *    _id :         le numéro d'identification de l'objet
  *    keywords:     le/les mots-clefs utilisés lors de la requête
  *    date:         la date de la requête
- *    args:         le/les arguments optionnels utilisés lors de la requête
+ *    args:         le/les arguments utilisés lors de la requête
  *    type:         le type de requête (web, images ou videos)
  *    result:       le résultat de la requête (array contenant les éléments)
  *    integrate:    indique si l'objet à déjà été intégré dans la collection d'URLs (0 si non)
