@@ -49,7 +49,7 @@ function googleImagesSearch(keyword, num, opt_args, callback){
 
 
 
-googleImagesSearch('buy steroid', 50, function(err, res){if (err) console.log(err)})
+googleImagesSearch('buy steroid', 10, function(err, res){if (err) console.log(err)})
 
 
 

@@ -9,8 +9,8 @@ var mongoClient = mongodb.MongoClient;
 
 function insert(col, object, callback){
 //Insere un objet dans une base de donnee mongoDB, dans la collection (col)
-    var path = 'mongodb://localhost:27017/';
-    var db =  'detection';
+    var path = keys.mongoDB.path;
+    var db =  keys.DBdetection;
     var url =  path + db;
     mongoClient.connect(url, function(err, db) {
         if (err) callback(err);
