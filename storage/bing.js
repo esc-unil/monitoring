@@ -64,5 +64,3 @@ function videosSearch(keyword, num, opt_args, callback){
 exports.webSearch = webSearch;
 exports.imagesSearch = imagesSearch;
 exports.videosSearch = videosSearch;
-
-//webSearch('steroid', 20, function(err, res){if (err) console.log(err)});
