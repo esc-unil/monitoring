@@ -23,19 +23,16 @@ function webSearch(keyword, num, opt_args, callback) {
     extend(args, opt_args);
     go(args, function (err, response) {
         if (err) callback(err);
-        var result = [];
-        for (var i = 0; i < response.length; i++) { //retire le pagemap non utilisé et faisant planter l'intégration dans mongodb
-            delete response[i].pagemap;
-            result.push(response[i]);
+        else {
+            var results = {
+                keywords: keyword,
+                date: new Date(),
+                type: 'web',
+                args: opt_args,
+                result: response
+            };
+            callback(null, results);
         }
-        var results = {
-            keywords: keyword,
-            date : new Date(),
-            type : 'web',
-            args : opt_args,
-            result: result
-        };
-        callback(null, results);
     });
 }
 
@@ -50,19 +47,16 @@ function imagesSearch(keyword, num, opt_args, callback) {
     extend(args, opt_args);
     go(args, function (err, response) {
         if (err) callback(err);
-        var result = [];
-        for (var i = 0; i < response.length; i++) { //retire le pagemap non utilisé et faisant planter l'intégration dans mongodb
-            delete response[i].pagemap;
-            result.push(response[i]);
+        else {
+            var results = {
+                keywords: keyword,
+                date: new Date(),
+                type: 'images',
+                args: opt_args,
+                result: response
+            };
+            callback(null, results);
         }
-        var results = {
-            keywords: keyword,
-            date : new Date(),
-            type : 'images',
-            args : opt_args,
-            result: result
-        };
-        callback(null, results);
     });
 }
 
@@ -78,8 +72,8 @@ function go(args, callback) {
             }, 1000);
         },
         function (err, response) {
-            if (err) callback(err);
-            callback(null, response);
+            if (err) {callback(err);}
+            else {callback(null, response);}
         }
     );
 }
@@ -87,8 +81,8 @@ function go(args, callback) {
 function search(args, callback) {
 // recherche en utilisant l'API Custom Search Engine de Google
     customsearch.cse.list(args, function (err, data) {
-        if (err) callback(err);
-        callback(null, data.items);
+        if (err) {callback(err);}
+        else {callback(null, data.items);}
     });
 }
 

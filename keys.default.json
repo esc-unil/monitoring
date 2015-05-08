@@ -1,4 +1,12 @@
 {
+  "mongoDB": {
+    "path": "",
+    "user":"",
+    "password":""
+  },
+
+  "DBdetection" : "",
+
   "bingKey": "",
 
   "googleKey": "",

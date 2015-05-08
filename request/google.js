@@ -3,50 +3,27 @@
  * Created by tpineau
  */
 
-var google = require('./../api_request/google.js'); //!!!!!!!!!!
-var bing = require('./../api_request/bing.js');
-var yahoo = require('./../api_request/yahoo.js');
-var facebook = require('./../api_request/facebook.js');
-var twitter = require('./../api_request/twitter.js');
-var gplus = require('./../api_request/google_plus.js');
-var youtube = require('./../api_request/youtube.js');
-var reddit = require('./../api_request/reddit.js');
+var mongo = require('./mongo.js');
+var google = require('./../api_request/google.js');
 
-var mongodb = require('mongodb');
-var mongoClient = mongodb.MongoClient;
-
-
-function insert(col, object, callback){
-    //Insere un objet dans une base de donnee mongoDB, dans la collection (col)
-    var path = 'mongodb://localhost:27017/';
-    var db =  'detection';
-    var url =  path + db;
-    mongoClient.connect(url, function(err, db) {
-        if (err) callback(err);
-        else {
-            console.log('Connected correctly to server');
-            var collection = db.collection(col);
-            collection.insert(object, function(err){
-                if (err) callback(err);
-                else {
-                    console.log(object.date + ' -- ' + object.keywords + ': Inserted request into the ' + col + ' collection (length results: ' + object.result.length.toString() + ')')
-                    db.close();
-                    callback(null, object);
-                }
-             });
-        }
-    });
-}
 
 function googleWebSearch(keyword, num, opt_args, callback){
     if (typeof opt_args === 'function') {
         callback = opt_args;
         opt_args = null;
     }
-    google.webSearch(keyword, num, opt_args, function(err, result){
+    google.webSearch(keyword, num, opt_args, function(err, response){
         if (err) callback(err);
-        result.integrate = false;
-        insert('google', result, callback);
+        else {
+            var result = [];
+            for (var i = 0; i < response.result.length; i++) { //retire le pagemap non utilisé et faisant planter l'intégration dans mongodb
+                delete response.result[i].pagemap;
+                result.push(response.result[i]);
+            }
+            response.result = result;
+            response.integrate = 0;
+            mongo.insert('google', response, callback);
+        }
     });
 }
 
@@ -55,16 +32,24 @@ function googleImagesSearch(keyword, num, opt_args, callback){
         callback = opt_args;
         opt_args = null;
     }
-    google.imagesSearch(keyword, num, opt_args, function(err, result){
+    google.imagesSearch(keyword, num, opt_args, function(err, response){
         if (err) callback(err);
-        result.integrate = false;
-        insert('google', result, callback);
+        else {
+            var result = [];
+            for (var i = 0; i < response.result.length; i++) { //retire le pagemap non utilisé et faisant planter l'intégration dans mongodb
+                delete response.result[i].pagemap;
+                result.push(response.result[i]);
+            }
+            response.result = result;
+            response.integrate = 0
+            mongo.insert('google', response, callback);
+        }
     });
 }
 
 
 
-googleImagesSearch('buy steroid', 1, function(err, res){if (err) console.log(err)})
+googleImagesSearch('buy steroid', 50, function(err, res){if (err) console.log(err)})
 
 
 
