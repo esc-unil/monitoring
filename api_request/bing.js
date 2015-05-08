@@ -21,20 +21,17 @@ function webSearch(keyword, num, opt_args, callback) {
     var args = {Query: '\'' + keyword + '\'', top: num, format: 'json'};
     extend(args, opt_args);
     go('Web', args, function (err, response) {
-        if (err) callback(err);
-        var results = [];
-        for (var i = 0; i < response.length; i++) {
-            var obj = {request: {}};
-            obj.url = response[i].Url;
-            obj.request.type = 'web';
-            obj.request.keyword = keyword;
-            obj.request.ranking = i + 1;
-            obj.request.platform = 'Bing';
-            obj.request.date = new Date();
-            obj.request.args = opt_args;
-            results.push(obj);
+        if (err) {callback(err);}
+        else {
+            var results = {
+                keywords: keyword,
+                date: new Date(),
+                type: 'web',
+                args: opt_args,
+                result: response
+            };
+            callback(null, results);
         }
-        callback(null, results);
     });
 }
 
@@ -48,21 +45,17 @@ function imagesSearch(keyword, num, opt_args, callback) {
     var args = {Query: '\'' + keyword + '\'', top: num, format: 'json'};
     extend(args, opt_args);
     go('Image', args, function (err, response) {
-        if (err) callback(err);
-        var results = [];
-        for (var i = 0; i < response.length; i++) {
-            var obj = {request: {}};
-            obj.url = response[i].SourceUrl;
-            obj.image = response[i].MediaUrl;
-            obj.request.type = 'image';
-            obj.request.keyword = keyword;
-            obj.request.ranking = i + 1;
-            obj.request.platform = 'Bing';
-            obj.request.date = new Date();
-            obj.request.args = opt_args;
-            results.push(obj);
+        if (err) {callback(err);}
+        else {
+            var results = {
+                keywords: keyword,
+                date: new Date(),
+                type: 'images',
+                args: opt_args,
+                result: response
+            };
+            callback(null, results);
         }
-        callback(null, results);
     });
 }
 
@@ -76,23 +69,19 @@ function videosSearch(keyword, num, opt_args, callback) {
     var args = {Query: '\'' + keyword + '\'', top: num, format: 'json'};
     extend(args, opt_args);
     go('Video', args, function (err, response) {
-        if (err) callback(err);
-        var results = [];
-        for (var i = 0; i < response.length; i++) {
-            var obj = {request: {}};
-            obj.url = response[i].MediaUrl;
-            obj.request.type = 'video';
-            obj.request.keyword = keyword;
-            obj.request.ranking = i + 1;
-            obj.request.platform = 'Bing';
-            obj.request.date = new Date();
-            obj.request.args = opt_args;
-            results.push(obj);
+        if (err) {callback(err);}
+        else {
+            var results = {
+                keywords: keyword,
+                date: new Date(),
+                type: 'videos',
+                args: opt_args,
+                result: response
+            };
+            callback(null, results);
         }
-        callback(null, results);
     });
 }
-
 
 function go(type, args, callback) {
 // lance le nombre de requêtes search afin d'obtenir le nombre de resultat souhaités
@@ -104,12 +93,11 @@ function go(type, args, callback) {
             search(type, args, callback);
         },
         function (err, response) {
-            if (err) callback(err);
-            callback(null, response);
+            if (err) {callback(err);}
+            else {callback(null, response);}
         }
     );
 }
-
 
 function search(type, args, callback) {
 // recherche en utilisant l'API Search de Bing
@@ -118,8 +106,8 @@ function search(type, args, callback) {
     var url = webSearchUrl + args;
     request(url, function (err, response, body) {
         if (err) {callback(err)}
-        var result = JSON.parse(body).d.results;
-        if (!err && response.statusCode == 200) {
+        else {
+            var result = JSON.parse(body).d.results;
             callback(null, result);
         }
     });

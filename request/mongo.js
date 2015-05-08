@@ -1,6 +1,8 @@
 'use strict';
 /**
  * Created by tpineau
+ *
+ * Script pour insérer les résultats des requêtes APIs dans une base de donnée MongoDB (db définit dans keys.json) dans une collection particulière
  */
 
 var keys = require('./../keys.json');

@@ -6,7 +6,7 @@
 var mongo = require('./mongo.js');
 var yahoo = require('./../api_request/yahoo.js');
 
-function yahooWebSearch(keyword, num, opt_args, callback){
+function webSearch(keyword, num, opt_args, callback){
     if (typeof opt_args === 'function') {
         callback = opt_args;
         opt_args = null;
@@ -20,7 +20,7 @@ function yahooWebSearch(keyword, num, opt_args, callback){
     });
 }
 
-function yahooImagesSearch(keyword, num, opt_args, callback){
+function imagesSearch(keyword, num, opt_args, callback){
     if (typeof opt_args === 'function') {
         callback = opt_args;
         opt_args = null;
@@ -34,7 +34,5 @@ function yahooImagesSearch(keyword, num, opt_args, callback){
     });
 }
 
-exports.yahooWebSearch = yahooWebSearch;
-exports.yahooImagesSearch = yahooImagesSearch;
-
-yahooImagesSearch('buy steroid', 50, function(err, res){if (err) console.log(err)})
+exports.webSearch = webSearch;
+exports.imagesSearch = imagesSearch;

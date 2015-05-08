@@ -6,7 +6,7 @@
 var mongo = require('./mongo.js');
 var google = require('./../api_request/google.js');
 
-function googleWebSearch(keyword, num, opt_args, callback){
+function webSearch(keyword, num, opt_args, callback){
     if (typeof opt_args === 'function') {
         callback = opt_args;
         opt_args = null;
@@ -26,7 +26,7 @@ function googleWebSearch(keyword, num, opt_args, callback){
     });
 }
 
-function googleImagesSearch(keyword, num, opt_args, callback){
+function imagesSearch(keyword, num, opt_args, callback){
     if (typeof opt_args === 'function') {
         callback = opt_args;
         opt_args = null;
@@ -46,5 +46,5 @@ function googleImagesSearch(keyword, num, opt_args, callback){
     });
 }
 
-exports.googleWebSearch = googleWebSearch;
-exports.googleImagesSearch = googleImagesSearch;
+exports.webSearch = webSearch;
+exports.imagesSearch = imagesSearch;
