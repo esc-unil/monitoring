@@ -1,6 +1,7 @@
 {
   "mongoDB": {
-    "path": "",
+    "domain":"",
+    "port": "",
     "user":"",
     "password":""
   },

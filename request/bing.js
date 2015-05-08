@@ -52,4 +52,4 @@ exports.webSearch = webSearch;
 exports.imagesSearch = imagesSearch;
 exports.videosSearch = videosSearch;
 
-//videosSearch('steroid', 50, function(err, res){if (err) console.log(err)});
+videosSearch('steroid', 50, function(err, res){if (err) console.log(err)});

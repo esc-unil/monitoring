@@ -9,11 +9,14 @@ var keys = require('./../keys.json');
 var mongodb = require('mongodb');
 var mongoClient = mongodb.MongoClient;
 
+if (keys.mongoDB.user != '' && keys.mongoDB.password != ''){var login = keys.mongoDB.user + ':' + keys.mongoDB.password;}
+else {var login = '';}
+var mongoPath = 'mongodb://' + login + keys.mongoDB.domain + ':' + keys.mongoDB.port + '/'
+
 function insert(col, object, callback){
 //Insere un objet dans une base de donnee mongoDB, dans la collection (col)
-    var path = keys.mongoDB.path;
     var db =  keys.DBdetection;
-    var url =  path + db;
+    var url =  mongoPath + db;
     mongoClient.connect(url, function(err, db) {
         if (err) callback(err);
         else {
