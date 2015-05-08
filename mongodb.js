@@ -2,10 +2,11 @@
 /**
  * Created by tpineau
  *
- * Script pour insérer les résultats des requêtes APIs dans une base de donnée MongoDB (db définit dans keys.json) dans une collection particulière
+ * Script pour insérer les résultats des requêtes APIs dans une base de donnée MongoDB dans une collection particulière.
+ * (db définit dans keys.json)
  */
 
-var keys = require('./../keys.json');
+var keys = require('./keys.json');
 var mongodb = require('mongodb');
 var mongoClient = mongodb.MongoClient;
 

@@ -46,43 +46,33 @@ function search(subreddit, args, callback) {
     else {
         var webSearchUrl = 'http://www.reddit.com/r/' + subreddit + '/search.json?';
     }
-    var args = querystring.stringify(args);
-    var url = webSearchUrl + args;
+    var url = webSearchUrl + querystring.stringify(args);
     var req = request(url, function (err, response, body) {
         if (err) {
             callback(err)
         }
-        ;
-        var data = JSON.parse(body).data;
-        var result = selectData(data.children);
-        var after = data.after;
-        if (!err && response.statusCode == 200) {
-            callback(null, result, after);
+        else {
+            var data = JSON.parse(body).data;
+
+            var argums = args;
+            argums.subbreddit = subreddit;
+            var results = [];
+            for (var i = 0; i < data.children.length; i++) {
+                var post = data.children[i].data;
+                var result = {
+                    keywords: args.q,
+                    date: new Date(),
+                    type: 'web',
+                    args: argums,
+                    result: post
+                };
+                results.push(result);
+            }
+
+            var after = data.after;
+            callback(null, results, after);
         }
     })
-}
-
-function selectData(data) {
-    var results = [];
-    for (var i = 0; i < data.length; i++) {
-        var item = data[i].data;
-        var obj = {};
-        obj.id = item.id;
-        obj.url = item.url;
-        obj.subreddit = item.subreddit;
-        obj.subreddit_id = item.subreddit_id;
-        obj.author = item.author;
-        obj.created = new Date(item.created * 1000);
-        obj.title = item.title;
-        obj.text = item.selftext;
-        obj.num_comments = item.num_comments;
-        obj.likes = item.likes;
-        obj.score = item.score;
-        obj.ups = item.ups;
-        obj.downs = item.downs;
-        results.push(obj);
-    }
-    return results;
 }
 
 exports.subredditSearch = subredditSearch;
