@@ -3,14 +3,14 @@
  * Created by tpineau
  */
 
-var google = require('./clearweb/google.js'); //!!!!!!!!!!
-var bing = require('./clearweb/bing.js');
-var yahoo = require('./clearweb/yahoo.js');
-var facebook = require('./clearweb/facebook.js');
-var twitter = require('./clearweb/twitter.js');
-var gplus = require('./clearweb/google_plus.js');
-var youtube = require('./clearweb/youtube.js');
-var reddit = require('./clearweb/reddit.js');
+var google = require('./../api_request/google.js'); //!!!!!!!!!!
+var bing = require('./../api_request/bing.js');
+var yahoo = require('./../api_request/yahoo.js');
+var facebook = require('./../api_request/facebook.js');
+var twitter = require('./../api_request/twitter.js');
+var gplus = require('./../api_request/google_plus.js');
+var youtube = require('./../api_request/youtube.js');
+var reddit = require('./../api_request/reddit.js');
 
 var mongodb = require('mongodb');
 var mongoClient = mongodb.MongoClient;
