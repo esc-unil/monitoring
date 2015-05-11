@@ -53,13 +53,38 @@ function go(type, args, callback) {
             if (type === 'users') {args.page = item.page;}
             search(type, args, function(err, data){
                 if (err) {callback();}
-                if ((type === 'tweets' || 'userTimeline') && data.length > 1) {args.max_id = data[data.length-1].id_str;}
-                callback(null, data);
+                else {
+                    if ((type === 'tweets' || 'userTimeline') && data.length > 1) {
+                        args.max_id = data[data.length-1].id_str;
+                    }
+                    callback(null, data);
+                }
             });
         },
         function (err, response) {
-            if (err) callback(err);
-            callback(null, response);
+            if (err) {callback(err);}
+            else if (type === 'tweets' || 'userTimeline') {
+                var results = [];
+                if (response === undefined){callback(null, results);}
+                else {
+                    for (var i = 0; i < response.length; i++) {
+                        var post = response[i];
+                        if (i>0 && post.id != response[i-1].id) { //évite les doublons
+                            post.created_at = new Date(post.created_at); // formate la date created_at dans un format Date
+                            var result = {
+                                keywords: args.q,
+                                date: new Date(),
+                                type: 'post',
+                                args: args,
+                                result: post
+                            };
+                            results.push(result);
+                        }
+                    }
+                    callback(null, results);
+                }
+            }
+            else {callback(null, response);} // si user
         }
     );
 }
@@ -75,9 +100,16 @@ function search(type, args, callback) {
     oa.get(url, twitterAccessToken, twitterAccessTokenSecret, function (err, body, response) {
         if (!err && response.statusCode == 200) {
             var data = JSON.parse(body);
-            if (type === 'tweets') {callback(null, data.statuses);}
-            else if (type === 'users' || type === 'userTimeline') {callback(null, data);}
-        } else {callback(err);}
+            if (type === 'tweets') {
+                var data = data.statuses;
+            }
+            if (type === 'tweets' || type === 'userTimeline') {
+                if (args.max_id === data[0].id_str) {data.splice(0, 1);}
+                if (data.length >0 && args.since_id === data[data.length - 1].id_str) {data.splice(data.length-1, 1);}
+            }
+            callback(null, data);
+        }
+        else {callback(err);}
     });
 
 }
@@ -106,3 +138,4 @@ function listRequest(type, args) {
 exports.statusSearch = statusSearch;
 exports.usersSearch = usersSearch;
 exports.userStatus = userStatus;
+

@@ -16,7 +16,7 @@
  *    integrate:    indique si l'objet à déjà été parsé et intégré dans la collection d'URLs (0 si non)
  *  }
  *
- *  Les fonctions searchAfter et searchBefore permettent de rechercher les postes plus récents ou plus vieux (respectivement)
+ *  Les fonctions searchOld et searchNew permettent de rechercher les postes plus vieux ou plus récents (respectivement)
  *  que ceux contenus dans la DB pour un mot-clef et un subreddit particulier (null pour sans subreddit définit).
  *
  */
@@ -51,7 +51,7 @@ function subredditSearch(keyword, num, subreddit, opt_args, callback){
     });
 }
 
-function searchAfter(keyword, num, subreddit, opt_args, callback){
+function searchOld(keyword, num, subreddit, opt_args, callback){
 //Recherche de postes antérieur au plus vieux stockés dans la base de donnée MongoDB
     if (typeof opt_args === 'function') {
         callback = opt_args;
@@ -66,7 +66,7 @@ function searchAfter(keyword, num, subreddit, opt_args, callback){
     })
 }
 
-function searchBefore(keyword, num, subreddit, opt_args, callback){
+function searchNew(keyword, num, subreddit, opt_args, callback){
 //Recherche de postes précédents au plus récents stockés dans la base de donnée MongoDB
     if (typeof opt_args === 'function') {
         callback = opt_args;
@@ -128,5 +128,7 @@ function cursor(cible, keyword, subreddit, callback){
 
 exports.redditSearch = redditSearch;
 exports.subredditSearch = subredditSearch;
-exports.searchBefore = searchBefore;
-exports.searchAfter = searchAfter;
+exports.searchNew = searchNew;
+exports.searchOld = searchOld;
+
+//searchNew('steroid',50,null,function(a,b){console.log(a);});

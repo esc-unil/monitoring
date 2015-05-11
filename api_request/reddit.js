@@ -58,6 +58,7 @@ function search(subreddit, args, callback) {
             else {
                 for (var i = 0; i < data.children.length; i++) {
                     var post = data.children[i].data;
+                    post.created = new Date(post.created_utc*1000); // formate la date created dans un format Date
                     var result = {
                         keywords: args.q,
                         date: new Date(),
