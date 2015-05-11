@@ -30,7 +30,7 @@ function subredditSearch(keyword, num, subreddit, opt_args, callback) {
     if (opt_args.t === undefined) {
         opt_args.t = 'all';
     }
-    if (opt_args.after === undefined) {
+    if (opt_args.after === undefined && opt_args.before === undefined) {
         opt_args.after = null;
     }
     extend(args, opt_args);
@@ -54,19 +54,21 @@ function search(subreddit, args, callback) {
         else {
             var data = JSON.parse(body).data;
             var results = [];
-            for (var i = 0; i < data.children.length; i++) {
-                var post = data.children[i].data;
-                var result = {
-                    keywords: args.q,
-                    date: new Date(),
-                    type: subreddit,
-                    args: args,
-                    result: post
-                };
-                results.push(result);
+            if (data === undefined){callback(null, results);}
+            else {
+                for (var i = 0; i < data.children.length; i++) {
+                    var post = data.children[i].data;
+                    var result = {
+                        keywords: args.q,
+                        date: new Date(),
+                        type: subreddit,
+                        args: args,
+                        result: post
+                    };
+                    results.push(result);
+                }
+                callback(null, results);
             }
-            var after = data.after;
-            callback(null, results, after);
         }
     })
 }

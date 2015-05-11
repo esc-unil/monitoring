@@ -12,23 +12,23 @@ var mongoClient = mongodb.MongoClient;
 
 if (keys.mongoDB.user != '' && keys.mongoDB.password != ''){var login = keys.mongoDB.user + ':' + keys.mongoDB.password;}
 else {var login = '';}
-var mongoPath = 'mongodb://' + login + keys.mongoDB.domain + ':' + keys.mongoDB.port + '/'
+var mongoPath = 'mongodb://' + login + keys.mongoDB.domain + ':' + keys.mongoDB.port + '/' + keys.DBrecherche
 
 function insert(col, object, callback){
 //Insere un objet dans une base de donnee mongoDB, dans la collection (col)
-    var db =  keys.DBdetection;
-    var url =  mongoPath + db;
-    mongoClient.connect(url, function(err, db) {
+    mongoClient.connect(mongoPath, function(err, db) {
         if (err) callback(err);
         else {
-            console.log('Connected correctly to server');
             var collection = db.collection(col);
             collection.insert(object, function(err){
-                if (err) callback(err);
+                if (err) {
+                    db.close();
+                    callback(err);
+                }
                 else {
-                    if (object.result != undefined){ var length = object.result.length.toString();}
+                    if (object.result != undefined){ var length = object.result.length.toString();} //pour les SEO
                     else {var length = object.length.toString();}
-                    console.log(new Date() + ': Inserted request into the ' + col + ' collection (length results: ' + length + ')')
+                    console.log(new Date() + ': Inserted request into the ' + col + ' collection (length results: ' + length + ')');
                     db.close();
                     callback(null, object);
                 }
@@ -38,3 +38,4 @@ function insert(col, object, callback){
 }
 
 exports.insert = insert;
+exports.mongoPath = mongoPath;
