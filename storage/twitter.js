@@ -4,20 +4,23 @@
  *
  * Script de recherche sur Twitter
  *
- * Chaques tweets correspond à un objet avec les paramètres suivants:
+ * Pour statusSearch et userStatus (recherche de tweets par mots-clefs ou par utilisateur, respectivement):
+ * Chaques tweets correspond ï¿½ un objet avec les paramï¿½tres suivants:
  *  {
- *    _id :         le numéro d'identification de l'objet
- *    keywords:     le/les mots-clefs utilisés lors de la requête ou l'id de l'utilisateur pour la recherche de poste par utilisateur
- *    date:         la date de la requête
- *    type:         "post" pour les tweets
- *    args:         le/les arguments utilisés lors de la requête
- *    result:       les données du tweet
- *    integrate:    indique si l'objet à déjà été parsé et intégré dans la collection d'URLs (0 si non)
+ *    _id :         le numï¿½ro d'identification de l'objet
+ *    keywords:     le/les mots-clefs utilisï¿½s lors de la requï¿½te ou l'id de l'utilisateur pour la recherche de poste par utilisateur
+ *    date:         la date de la requï¿½te
+ *    type:         "post" pour les tweets ou l'id de l'auteur pour un les tweets recherchÃ©s pour un auteur spÃ©cifique.
+ *    args:         le/les arguments utilisï¿½s lors de la requï¿½te
+ *    result:       les donnï¿½es du tweet
+ *    integrate:    indique si l'objet ï¿½ dï¿½jï¿½ ï¿½tï¿½ parsï¿½ et intï¿½grï¿½ dans la collection d'URLs (0 si non)
  *  }
  *
- *  Les fonctions searchOld et searchNew permettent de rechercher les postes plus vieux ou plus récents (respectivement)
- *  que ceux contenus dans la DB pour un mot-clef spécifique.
+ *  Les fonctions statusSearchOld / userStatusOld et statusSearchNew / userStatusNew permettent de rechercher les postes
+ *  plus vieux ou plus rï¿½cents (respectivement) que ceux contenus dans la DB pour un mot-clef ou un utilisateur spï¿½cifique.
  *
+ *
+ * Pour la recherche d'utilisateurs:
  */
 
 var mongo = require('./../mongodb.js');
@@ -44,45 +47,95 @@ function statusSearch(keyword, num, opt_args, callback){
     });
 }
 
-function searchOld(keyword, num, opt_args, callback){
-//Recherche de postes antérieur au plus vieux stockés dans la base de donnée MongoDB
+function userStatus(id, num, opt_args, callback){
     if (typeof opt_args === 'function') {
         callback = opt_args;
         opt_args = {};
     }
-    maxid(keyword, function(err, max_id){
+    twitter.userStatus(id, num, opt_args, function(err, response){
         if (err) {callback(err);}
         else {
-            opt_args.max_id = max_id;
+            var results = [];
+            for (var i = 0; i < response.length; i++) {
+                response[i].integrate = 0;
+                results.push(response[i]);
+            }
+            if (results.length != 0) {
+                mongo.insert('twitter', results, callback);
+            }
+        }
+    });
+}
+
+function statusSearchOld(keyword, num, opt_args, callback){
+//Recherche de postes plus vieux que ceux stockÃ©s dans la base de donnÃ©e MongoDB pour un mot-clef particulier
+    if (typeof opt_args === 'function') {
+        callback = opt_args;
+        opt_args = {};
+    }
+    maxid(keyword, 'post', function(err, max_id){
+        if (err) {callback(err);}
+        else {
+            if (max_id != null) {opt_args.max_id = max_id;}
             statusSearch(keyword, num, opt_args, callback);
         }
     })
 }
 
-function searchNew(keyword, num, opt_args, callback){
-//Recherche de postes antérieur au plus vieux stockés dans la base de donnée MongoDB
+function statusSearchNew(keyword, num, opt_args, callback){
+//Recherche de postes plus rÃ©cents que ceux stockÃ©s dans la base de donnÃ©e MongoDB pour un mot-clef particulier
     if (typeof opt_args === 'function') {
         callback = opt_args;
         opt_args = {};
     }
-    sinceid(keyword, function(err, since_id){
+    sinceid(keyword, 'post', function(err, since_id){
         if (err) {callback(err);}
         else {
-            opt_args.since_id = since_id;
+            if (since_id != null) {opt_args.since_id = since_id;}
             statusSearch(keyword, num, opt_args, callback);
         }
     })
 }
 
-function sinceid(keyword, callback){
-    cursor(-1, keyword, callback);
+function userStatusOld(id, num, opt_args, callback){
+//Recherche de postes plus vieux que ceux stockÃ©s dans la base de donnÃ©e MongoDB pour un auteur particulier
+    if (typeof opt_args === 'function') {
+        callback = opt_args;
+        opt_args = {};
+    }
+    maxid(id, id, function(err, max_id){
+        if (err) {callback(err);}
+        else {
+            if (max_id != null) {opt_args.max_id = max_id;}
+            userStatus(id, num, opt_args, callback);
+        }
+    })
 }
 
-function maxid(keyword, callback){
-    cursor(1, keyword, callback);
+function userStatusNew(id, num, opt_args, callback){
+//Recherche de postes plus rÃ©cents que ceux stockÃ©s dans la base de donnÃ©e MongoDB pour un auteur particulier
+    if (typeof opt_args === 'function') {
+        callback = opt_args;
+        opt_args = {};
+    }
+    sinceid(id, id, function(err, since_id){
+        if (err) {callback(err);}
+        else {
+            if (since_id != null) {opt_args.since_id = since_id;}
+            userStatus(id, num, opt_args, callback);
+        }
+    })
 }
 
-function cursor(cible, keyword, callback){
+function sinceid(keyword, type, callback){
+    cursor(-1, keyword, type, callback);
+}
+
+function maxid(keyword, type, callback){
+    cursor(1, keyword, type, callback);
+}
+
+function cursor(cible, keyword, type, callback){
     mongoClient.connect(mongo.mongoPath, function(err, db) {
         if (err) {callback(err);}
         else {
@@ -93,13 +146,13 @@ function cursor(cible, keyword, callback){
                     callback(null, null);
                 }
                 else{
-                    collection.count({keywords:keyword, type: 'post'}, function(err, n1){
+                    collection.count({keywords:keyword, type: type}, function(err, n1){
                         if (n1 === 0){
                             db.close();
                             callback(null, null);
                         }
                         else{
-                            collection.find({keywords: keyword, type: 'post'}).sort({'result.created_at': cible}).limit(1).toArray(function (err, res) {
+                            collection.find({keywords: keyword, type: type}).sort({'result.created_at': cible}).limit(1).toArray(function (err, res) {
                                 if (err) {callback(err);}
                                 else {
                                     db.close();
@@ -118,8 +171,14 @@ function cursor(cible, keyword, callback){
 }
 
 exports.statusSearch = statusSearch;
-exports.searchNew = searchNew;
-exports.searchOld = searchOld;
+exports.userStatus = userStatus;
+exports.statusSearchhNew = statusSearchNew;
+exports.statusSearchOld = statusSearchOld;
+exports.userStatusNew = userStatusNew;
+exports.userStatusOld = userStatusOld;
 
 
-searchNew('steroid',1000, function(err,res){console.log(err);});
+//statusSearchNew('steroid',5, function(err,res){console.log(err);});
+
+
+//userStatusNew('3140881142', 1000, function(err,res){console.log(err);});

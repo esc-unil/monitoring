@@ -60,7 +60,7 @@ function searchOld(keyword, num, subreddit, opt_args, callback){
     after(keyword, subreddit, function(err, after){
         if (err) {callback(err);}
         else {
-            opt_args.after = after;
+            if (after != null) {opt_args.after = after;}
             subredditSearch(keyword, num, subreddit, opt_args, callback);
         }
     })
@@ -75,7 +75,7 @@ function searchNew(keyword, num, subreddit, opt_args, callback){
     before(keyword, subreddit, function(err, before){
         if (err) {callback(err);}
         else {
-            opt_args.before = before;
+            if (before != null) {opt_args.before = before;}
             subredditSearch(keyword, num, subreddit, opt_args, callback);
         }
     })
@@ -124,11 +124,7 @@ function cursor(cible, keyword, subreddit, callback){
     });
 }
 
-
-
 exports.redditSearch = redditSearch;
 exports.subredditSearch = subredditSearch;
 exports.searchNew = searchNew;
 exports.searchOld = searchOld;
-
-//searchNew('steroid',50,null,function(a,b){console.log(a);});

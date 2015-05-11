@@ -64,17 +64,25 @@ function go(type, args, callback) {
         function (err, response) {
             if (err) {callback(err);}
             else if (type === 'tweets' || 'userTimeline') {
+                if (type === 'tweets') {
+                    var keyword = args.q;
+                    var genre = 'post';
+                }
+                else if (type === 'userTimeline'){
+                    var keyword = args.user_id;
+                    var genre = keyword;
+                }
                 var results = [];
                 if (response === undefined){callback(null, results);}
                 else {
                     for (var i = 0; i < response.length; i++) {
                         var post = response[i];
-                        if (i>0 && post.id != response[i-1].id) { //évite les doublons
+                        if ((i>0 && post.id != response[i-1].id) || (i === 0)) { //évite les doublons
                             post.created_at = new Date(post.created_at); // formate la date created_at dans un format Date
                             var result = {
-                                keywords: args.q,
+                                keywords: keyword,
                                 date: new Date(),
-                                type: 'post',
+                                type: genre,
                                 args: args,
                                 result: post
                             };
@@ -103,8 +111,8 @@ function search(type, args, callback) {
             if (type === 'tweets') {
                 var data = data.statuses;
             }
-            if (type === 'tweets' || type === 'userTimeline') {
-                if (args.max_id === data[0].id_str) {data.splice(0, 1);}
+            if (type === 'tweets' || 'userTimeline') {
+                if (data.length >0 && args.max_id === data[0].id_str) {data.splice(0, 1);}
                 if (data.length >0 && args.since_id === data[data.length - 1].id_str) {data.splice(data.length-1, 1);}
             }
             callback(null, data);
@@ -138,4 +146,3 @@ function listRequest(type, args) {
 exports.statusSearch = statusSearch;
 exports.usersSearch = usersSearch;
 exports.userStatus = userStatus;
-
