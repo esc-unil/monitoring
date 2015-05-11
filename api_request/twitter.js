@@ -54,7 +54,7 @@ function go(type, args, callback) {
             search(type, args, function(err, data){
                 if (err) {callback();}
                 else {
-                    if ((type === 'tweets' || 'userTimeline') && data.length > 1) {
+                    if ((type === 'tweets' || type === 'userTimeline') && data.length > 1) {
                         args.max_id = data[data.length-1].id_str;
                     }
                     callback(null, data);
@@ -63,14 +63,12 @@ function go(type, args, callback) {
         },
         function (err, response) {
             if (err) {callback(err);}
-            else if (type === 'tweets' || 'userTimeline') {
+            else if (type === 'tweets' || type === 'userTimeline') {
                 if (type === 'tweets') {
                     var keyword = args.q;
-                    var genre = 'post';
                 }
                 else if (type === 'userTimeline'){
                     var keyword = args.user_id;
-                    var genre = keyword;
                 }
                 var results = [];
                 if (response === undefined){callback(null, results);}
@@ -82,7 +80,7 @@ function go(type, args, callback) {
                             var result = {
                                 keywords: keyword,
                                 date: new Date(),
-                                type: genre,
+                                type: 'post',
                                 args: args,
                                 result: post
                             };
@@ -92,7 +90,16 @@ function go(type, args, callback) {
                     callback(null, results);
                 }
             }
-            else {callback(null, response);} // si user
+            else if (type === 'users'){
+                var results = {
+                    keywords: args.q,
+                    date: new Date(),
+                    type: 'users',
+                    args: args,
+                    result: response
+                };
+                callback(null, results);
+            }
         }
     );
 }
@@ -111,7 +118,7 @@ function search(type, args, callback) {
             if (type === 'tweets') {
                 var data = data.statuses;
             }
-            if (type === 'tweets' || 'userTimeline') {
+            if (type === 'tweets' || type === 'userTimeline') {
                 if (data.length >0 && args.max_id === data[0].id_str) {data.splice(0, 1);}
                 if (data.length >0 && args.since_id === data[data.length - 1].id_str) {data.splice(data.length-1, 1);}
             }

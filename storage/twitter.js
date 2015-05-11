@@ -8,9 +8,9 @@
  * Chaques tweets correspond � un objet avec les param�tres suivants:
  *  {
  *    _id :         le num�ro d'identification de l'objet
- *    keywords:     le/les mots-clefs utilis�s lors de la requ�te ou l'id de l'utilisateur pour la recherche de poste par utilisateur
+ *    keywords:     le/les mots-clefs utilis�s lors de la requ�te ou l'id de l'utilisateur pour la recherche de postes
  *    date:         la date de la requ�te
- *    type:         "post" pour les tweets ou l'id de l'auteur pour un les tweets recherchés pour un auteur spécifique.
+ *    type:         "post"
  *    args:         le/les arguments utilis�s lors de la requ�te
  *    result:       les donn�es du tweet
  *    integrate:    indique si l'objet � d�j� �t� pars� et int�gr� dans la collection d'URLs (0 si non)
@@ -20,7 +20,16 @@
  *  plus vieux ou plus r�cents (respectivement) que ceux contenus dans la DB pour un mot-clef ou un utilisateur sp�cifique.
  *
  *
- * Pour la recherche d'utilisateurs:
+ * Pour la recherche d'utilisateurs, une recherche correspond à un objet avec les paramètres suivants:
+ * *  {
+ *    _id :         le num�ro d'identification de l'objet
+ *    keywords:     le/les mots-clefs utilis�s lors de la requ�te
+ *    date:         la date de la requ�te
+ *    type:         "users"
+ *    args:         le/les arguments utilis�s lors de la requ�te
+ *    result:       le résultat de la requête (array contenant les données sur les utilisateurs)
+ *    integrate:    indique si l'objet � d�j� �t� pars� et int�gr� dans la collection d'URLs (0 si non)
+ *  }
  */
 
 var mongo = require('./../mongodb.js');
@@ -43,6 +52,20 @@ function statusSearch(keyword, num, opt_args, callback){
             if (results.length != 0) {
                 mongo.insert('twitter', results, callback);
            }
+        }
+    });
+}
+
+function usersSearch(keyword, num, opt_args, callback){
+    if (typeof opt_args === 'function') {
+        callback = opt_args;
+        opt_args = {};
+    }
+    twitter.usersSearch(keyword, num, opt_args, function(err, response){
+        if (err) callback(err);
+        else {
+            response.integrate = 0;
+            mongo.insert('twitter', response, callback);
         }
     });
 }
@@ -73,7 +96,7 @@ function statusSearchOld(keyword, num, opt_args, callback){
         callback = opt_args;
         opt_args = {};
     }
-    maxid(keyword, 'post', function(err, max_id){
+    maxid(keyword, function(err, max_id){
         if (err) {callback(err);}
         else {
             if (max_id != null) {opt_args.max_id = max_id;}
@@ -88,7 +111,7 @@ function statusSearchNew(keyword, num, opt_args, callback){
         callback = opt_args;
         opt_args = {};
     }
-    sinceid(keyword, 'post', function(err, since_id){
+    sinceid(keyword, function(err, since_id){
         if (err) {callback(err);}
         else {
             if (since_id != null) {opt_args.since_id = since_id;}
@@ -103,7 +126,7 @@ function userStatusOld(id, num, opt_args, callback){
         callback = opt_args;
         opt_args = {};
     }
-    maxid(id, id, function(err, max_id){
+    maxid(id, function(err, max_id){
         if (err) {callback(err);}
         else {
             if (max_id != null) {opt_args.max_id = max_id;}
@@ -118,7 +141,7 @@ function userStatusNew(id, num, opt_args, callback){
         callback = opt_args;
         opt_args = {};
     }
-    sinceid(id, id, function(err, since_id){
+    sinceid(id, function(err, since_id){
         if (err) {callback(err);}
         else {
             if (since_id != null) {opt_args.since_id = since_id;}
@@ -127,15 +150,15 @@ function userStatusNew(id, num, opt_args, callback){
     })
 }
 
-function sinceid(keyword, type, callback){
-    cursor(-1, keyword, type, callback);
+function sinceid(keyword, callback){
+    cursor(-1, keyword, callback);
 }
 
-function maxid(keyword, type, callback){
-    cursor(1, keyword, type, callback);
+function maxid(keyword, callback){
+    cursor(1, keyword, callback);
 }
 
-function cursor(cible, keyword, type, callback){
+function cursor(cible, keyword, callback){
     mongoClient.connect(mongo.mongoPath, function(err, db) {
         if (err) {callback(err);}
         else {
@@ -146,13 +169,13 @@ function cursor(cible, keyword, type, callback){
                     callback(null, null);
                 }
                 else{
-                    collection.count({keywords:keyword, type: type}, function(err, n1){
+                    collection.count({keywords:keyword, type: 'post'}, function(err, n1){
                         if (n1 === 0){
                             db.close();
                             callback(null, null);
                         }
                         else{
-                            collection.find({keywords: keyword, type: type}).sort({'result.created_at': cible}).limit(1).toArray(function (err, res) {
+                            collection.find({keywords: keyword, type: 'post'}).sort({'result.created_at': cible}).limit(1).toArray(function (err, res) {
                                 if (err) {callback(err);}
                                 else {
                                     db.close();
@@ -171,6 +194,7 @@ function cursor(cible, keyword, type, callback){
 }
 
 exports.statusSearch = statusSearch;
+exports.usersSearch = usersSearch;
 exports.userStatus = userStatus;
 exports.statusSearchhNew = statusSearchNew;
 exports.statusSearchOld = statusSearchOld;
@@ -178,7 +202,6 @@ exports.userStatusNew = userStatusNew;
 exports.userStatusOld = userStatusOld;
 
 
-//statusSearchNew('steroid',5, function(err,res){console.log(err);});
-
-
-//userStatusNew('3140881142', 1000, function(err,res){console.log(err);});
+//statusSearchNew('steroid',50, function(err,res){console.log(err);});
+//userStatusNew('3140881142', 10, function(err,res){console.log(err);});
+//usersSearch('steroid', 50, function(a,b){console.log(a);});
