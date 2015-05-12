@@ -32,26 +32,56 @@ function go(args, callback) {
         function (item, callback) {
             args.maxResults = item.num;
             setTimeout(function () {
-                search(args, function(err, data, nextRequest){
-                    if (err) {callback()}
-                    args.pageToken = nextRequest;
-                    callback(null, data)
+                search(args, function(err, data, nextRequest) {
+                    if (err) {
+                        callback();
+                    }
+                    else {
+                        if (data.length < 50) {args.pageToken = 'STOP';}
+                        else {args.pageToken = nextRequest;}
+                        callback(null, data);
+                    }
                 });
             }, 0.4);
         },
         function (err, response) {
-            if (err) callback(err);
-            callback(null, response);
+            if (err) {
+                callback(err);
+            }
+            else {
+                delete args.auth;
+                var results = [];
+                for (var i = 0; i < response.length; i++) {
+                    var post = response[i];
+                    if (((i > 0 && post.id.videoId != response[i - 1].id.videoId) || (i === 0)) &&
+                        post.snippet.publishedAt != args.publishedBefore && post.snippet.publishedAt != args.publishedAfter) {
+
+                        post.snippet.publishedAt = new Date(post.snippet.publishedAt); // formate la date publishedAt dans un format Date
+                        var result = {
+                            keywords: args.q,
+                            date: new Date(),
+                            type: args.type + 's',
+                            args: args,
+                            result: post
+                        };
+                        results.push(result);
+                    }
+                }
+                callback(null, results);
+            }
         }
     );
 }
 
 function search(args, callback) {
 // recherche en utilisant l'API Youtube data de Google
-    youtube.search.list(args, function (err, data) {
-        if (err) callback(err);
-        callback(null, data.items, data.nextPageToken);
-    });
+    if (args.pageToken === 'STOP'){callback(null, []);}
+    else {
+        youtube.search.list(args, function (err, data) {
+            if (err) {callback(err);}
+            else {callback(null, data.items, data.nextPageToken);}
+        });
+    }
 }
 
 function listRequest(args) {
