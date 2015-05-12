@@ -205,6 +205,6 @@ exports.userStatusNew = userStatusNew;
 exports.userStatusOld = userStatusOld;
 
 
-//statusSearchNew('steroid',50, function(err,res){console.log(err);});
-//userStatusNew('3140881142', 10, function(err,res){console.log(err);});
+//statusSearchNew('steroid',1000, function(err,res){console.log(err);});
+//userStatusNew('3140881142', 500, function(err,res){console.log(err);});
 //usersSearch('steroid', 50, function(a,b){console.log(a);});

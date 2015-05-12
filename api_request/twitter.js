@@ -54,8 +54,10 @@ function go(type, args, callback) {
             search(type, args, function(err, data){
                 if (err) {callback();}
                 else {
-                    if ((type === 'tweets' || type === 'userTimeline') && data.length > 1) {
-                        args.max_id = data[data.length-1].id_str;
+                    if (type === 'tweets' || type === 'userTimeline') {
+                        if (type === 'tweets' && data.length < 100) {args.max_id = 'STOP';}
+                        else if (type === 'userTimeline' && data.length < 200) {args.max_id = 'STOP';}
+                        else {args.max_id = data[data.length-1].id_str;}
                     }
                     callback(null, data);
                 }
@@ -105,28 +107,42 @@ function go(type, args, callback) {
 }
 
 function search(type, args, callback) {
-    var baseUrl = 'https://api.twitter.com/1.1/';
-    if (type === 'tweets'){baseUrl += 'search/tweets.json';}
-    else if (type === 'users'){baseUrl += 'users/search.json';}
-    else if (type === 'userTimeline'){baseUrl += 'statuses/user_timeline.json';}
-    var options = '?' + querystring.stringify(args);
-    var url = baseUrl + options;
-    var oa = new oauth.OAuth('https://api.twitter.com/oauth/request_token', 'https://api.twitter.com/oauth/access_token', twitterConsumerKey, twitterConsumerSecret, '1.0', null, 'HMAC-SHA1');
-    oa.get(url, twitterAccessToken, twitterAccessTokenSecret, function (err, body, response) {
-        if (!err && response.statusCode == 200) {
-            var data = JSON.parse(body);
-            if (type === 'tweets') {
-                var data = data.statuses;
-            }
-            if (type === 'tweets' || type === 'userTimeline') {
-                if (data.length >0 && args.max_id === data[0].id_str) {data.splice(0, 1);}
-                if (data.length >0 && args.since_id === data[data.length - 1].id_str) {data.splice(data.length-1, 1);}
-            }
-            callback(null, data);
+    if (args.max_id === 'STOP'){callback(null, []);}
+    else {
+        var baseUrl = 'https://api.twitter.com/1.1/';
+        if (type === 'tweets') {
+            baseUrl += 'search/tweets.json';
         }
-        else {callback(err);}
-    });
-
+        else if (type === 'users') {
+            baseUrl += 'users/search.json';
+        }
+        else if (type === 'userTimeline') {
+            baseUrl += 'statuses/user_timeline.json';
+        }
+        var options = '?' + querystring.stringify(args);
+        var url = baseUrl + options;
+        var oa = new oauth.OAuth('https://api.twitter.com/oauth/request_token', 'https://api.twitter.com/oauth/access_token', twitterConsumerKey, twitterConsumerSecret, '1.0', null, 'HMAC-SHA1');
+        oa.get(url, twitterAccessToken, twitterAccessTokenSecret, function (err, body, response) {
+            if (!err && response.statusCode == 200) {
+                var data = JSON.parse(body);
+                if (type === 'tweets') {
+                    var data = data.statuses;
+                }
+                if (type === 'tweets' || type === 'userTimeline') {
+                    if (data.length > 0 && args.max_id === data[0].id_str) {
+                        data.splice(0, 1);
+                    }
+                    if (data.length > 0 && args.since_id === data[data.length - 1].id_str) {
+                        data.splice(data.length - 1, 1);
+                    }
+                }
+                callback(null, data);
+            }
+            else {
+                callback(err);
+            }
+        });
+    }
 }
 
 function listRequest(type, args) {
