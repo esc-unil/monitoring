@@ -20,7 +20,7 @@
  *  plus vieux ou plus récents (respectivement) que ceux contenus dans la DB pour un mot-clef ou un utilisateur spécifique.
  *
  *
- * Pour la recherche d'utilisateurs, une recherche correspond à  un objet avec les paramètres suivants:
+ * Pour la recherche d'utilisateurs ou de pages, une recherche correspond à  un objet avec les paramètres suivants:
  * *  {
  *    _id :         le numéro d'identification de l'objet
  *    keywords:     le/les mots-clefs utilisés lors de la requête
@@ -57,6 +57,21 @@ function statusSearch(keyword, num, opt_args, callback){
     });
 }
 
+function usersSearch(keyword, num, opt_args, callback){
+// Fonction de recherche d'utilisateurs ou de pages sur Google+ et stockage dans la DB dans la collection twitter
+    if (typeof opt_args === 'function') {
+        callback = opt_args;
+        opt_args = {};
+    }
+    gplus.usersSearch(keyword, num, opt_args, function(err, response){
+        if (err) callback(err);
+        else {
+            response.integrate = 0;
+            mongo.insert('google_plus', response, callback);
+        }
+    });
+}
+
 function userStatus(id, num, opt_args, callback){
 // Fonction de recherche d'activités d'un utilisateur particulier sur Google+ et stockage dans la DB dans la collection google_plus
     if (typeof opt_args === 'function') {
@@ -81,7 +96,9 @@ function userStatus(id, num, opt_args, callback){
 
 
 exports.statusSearch = statusSearch;
+exports.usersSearch = usersSearch;
 exports.userStatus = userStatus;
 
-//statusSearch('steroid',3,function(a,b){console.log(a);});
-//userStatus('102090703178046743178',100,function(a,b){console.log(a);});
+//statusSearch('steroid',15,function(a,b){console.log(a);});
+//userStatus('102090703178046743178',10,function(a,b){console.log(a);});
+//usersSearch('steroid',10,function(a,b){console.log(a);});

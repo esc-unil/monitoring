@@ -25,7 +25,7 @@ function statusSearch(keyword, num, opt_args, callback) {
 }
 
 function usersSearch(keyword, num, opt_args, callback) {
-// Fonction de recherche d'utilisateurs sur Google+
+// Fonction de recherche d'utilisateurs ou de pages sur Google+
 // Informations sur les arguments optionnels (opt_args): https://developers.google.com/+/api/latest/people/search?hl=fr
     if (typeof opt_args === 'function') {callback = opt_args; opt_args = {};}
     var args = {query: keyword, maxResults: num, auth: googleKey};
@@ -71,28 +71,53 @@ function go(type, args, callback) {
             }
             else {
                 delete args.auth;
-                if (args.pageToken === 'STOP') {delete args.pageToken;}
-                if (type === 'activities' || type === 'people') {var keyword = args.query;}
-                else if (type === 'activitiesUser') {var keyword = args.userId;}
-                var results = [];
-                if (response === undefined){callback(null, results);}
-                else {
-                    for (var i = 0; i < response.length; i++) {
-                        var post = response[i];
-                        if ((i>0 && post.id != response[i-1].id) || (i === 0)) { //évite les doublons
-                            post.published = new Date(post.published); // formate la date published dans un format Date
-                            var result = {
-                                keywords: keyword,
-                                date: new Date(),
-                                type: 'post',
-                                args: args,
-                                result: post
-                            };
-                            results.push(result);
-                        }
+                if (args.pageToken === 'STOP') {
+                    delete args.pageToken;
+                }
+                if (type === 'activities' || type === 'activitiesUser') {
+                    if (type === 'activities') {
+                        var keyword = args.query;
                     }
-                 }
-             callback(null, results);
+                    else if (type === 'activitiesUser') {
+                        var keyword = args.userId;
+                    }
+                    var results = [];
+                    if (response === undefined) {
+                        callback(null, results);
+                    }
+                    else {
+                        for (var i = 0; i < response.length; i++) {
+                            var post = response[i];
+                            if ((i > 0 && post.id != response[i - 1].id) || (i === 0)) { //évite les doublons
+                                post.published = new Date(post.published); // formate la date published dans un format Date
+                                var result = {
+                                    keywords: keyword,
+                                    date: new Date(),
+                                    type: 'post',
+                                    args: args,
+                                    result: post
+                                };
+                                results.push(result);
+                            }
+                        }
+                        callback(null, results);
+                    }
+                }
+                else if (type === 'people') {
+                    getUsers(response, function(err, data){
+                        if (err) {callback(err);}
+                        else {
+                            var results = {
+                                keywords: args.query,
+                                date: new Date(),
+                                type: 'users',
+                                args: args,
+                                result: data
+                            };
+                            callback(null, results);
+                        }
+                    });
+                }
             }
         }
     );
@@ -102,36 +127,50 @@ function search(type, args, callback) {
 // recherche en utilisant l'API Google+ de Google
     if (args.pageToken === 'STOP'){callback(null, []);}
     else {
-        console.log('pew pew');
-        if (type === 'activities' || 'activitiesUser') {
-            var request = plus.activities;
-        }
-        else if (type === 'people') {
-            var request = plus.people;
-        }
+        if (type === 'activities' || type === 'activitiesUser') {var request = plus.activities;}
+        else if (type === 'people') {var request = plus.people;}
         if (type === 'activities' || type === 'people') {
             request.search(args, function (err, data) {
-                if (err) {
-                    callback(err);
-                }
-                else {
-                    callback(null, data.items, data.nextPageToken);
-                }
+                if (err) {callback(err);}
+                else {callback(null, data.items, data.nextPageToken);}
             });
         }
         else if (type === 'activitiesUser') {
             request.list(args, function (err, data) {
-                if (err) {
-                    callback(err);
-                }
-                else {
-                    callback(null, data.items, data.nextPageToken);
-                }
+                if (err) {callback(err);}
+                else {callback(null, data.items, data.nextPageToken);}
             });
         }
     }
 }
 
+function getUsers(list, callback){
+//permet de récupérer des données potentiellement utiles pour usersSearch (1 requête par resultat de usersSearch!)
+    async.concatSeries(
+        list,
+        function (item, callback) {
+            var id = item.id;
+            setTimeout(function () {
+                plus.people.get({userId: id, auth: googleKey}, function(err, data){
+                    if (err) {callback();}
+                    else {
+                        callback(null, data);
+                    }
+                });
+            }, 200);
+        },
+        function (err, response) {
+            if (err) {
+                callback(err);
+            }
+            else {
+                callback(null, response)
+            }
+        }
+
+    )
+
+}
 
 function listRequest(type, args) {
 // Permet de depasser la limitation de résultat des requêtes
