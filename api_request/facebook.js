@@ -47,9 +47,19 @@ function search(args, callback) {
                 function (item, callback) {
                     searchID(item.id, args.access_token, callback);
                 },
-                function (err, result) {
-                    if (err) callback(err);
-                    callback(null, result);
+                function (err, response) {
+                    if (err) {callback(err);}
+                    else {
+                        delete args.access_token;
+                        var results = {
+                            keywords: args.q,
+                            date: new Date(),
+                            type: args.type + 's',
+                            args: args,
+                            result: response
+                        };
+                        callback(null, results);
+                    }
                 }
             );
         }
@@ -61,9 +71,15 @@ function searchID(id, accessToken, callback){
     var url = 'https://graph.facebook.com/v2.3/' + id + '?access_token=' + accessToken;
     request(url, function (err, response, body) {
         if (err) {callback(err);}
-        var result = JSON.parse(body);
-        if (!err && response.statusCode == 200) {callback(null, result);}
-        else {callback();}
+        else {
+            var result = JSON.parse(body);
+            if (!err && response.statusCode == 200) {
+                callback(null, result);
+            }
+            else {
+                callback();
+            }
+        }
     });
 }
 

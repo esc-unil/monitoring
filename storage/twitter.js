@@ -12,7 +12,7 @@
  *    date:         la date de la requête
  *    type:         "post"
  *    args:         le/les arguments utilisés lors de la requête
- *    result:       les donnï¿½es du tweet
+ *    result:       les données du tweet
  *    integrate:    indique si l'objet à déjà été parsé et intégré dans la collection d'URLs (0 si non)
  *  }
  *
