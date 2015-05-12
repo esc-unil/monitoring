@@ -5,30 +5,30 @@
  * Script de recherche sur Twitter
  *
  * Pour statusSearch et userStatus (recherche de tweets par mots-clefs ou par utilisateur, respectivement):
- * Chaques tweets correspond ï¿½ un objet avec les paramï¿½tres suivants:
+ * Chaques tweets correspond à un objet avec les paramètres suivants:
  *  {
- *    _id :         le numï¿½ro d'identification de l'objet
- *    keywords:     le/les mots-clefs utilisï¿½s lors de la requï¿½te ou l'id de l'utilisateur pour la recherche de postes
- *    date:         la date de la requï¿½te
+ *    _id :         le numéro d'identification de l'objet
+ *    keywords:     le/les mots-clefs utilisés lors de la requête ou l'id de l'utilisateur pour la recherche de postes
+ *    date:         la date de la requête
  *    type:         "post"
- *    args:         le/les arguments utilisï¿½s lors de la requï¿½te
+ *    args:         le/les arguments utilisés lors de la requête
  *    result:       les donnï¿½es du tweet
- *    integrate:    indique si l'objet ï¿½ dï¿½jï¿½ ï¿½tï¿½ parsï¿½ et intï¿½grï¿½ dans la collection d'URLs (0 si non)
+ *    integrate:    indique si l'objet à déjà été parsé et intégré dans la collection d'URLs (0 si non)
  *  }
  *
  *  Les fonctions statusSearchOld / userStatusOld et statusSearchNew / userStatusNew permettent de rechercher les postes
- *  plus vieux ou plus rï¿½cents (respectivement) que ceux contenus dans la DB pour un mot-clef ou un utilisateur spï¿½cifique.
+ *  plus vieux ou plus récents (respectivement) que ceux contenus dans la DB pour un mot-clef ou un utilisateur spécifique.
  *
  *
- * Pour la recherche d'utilisateurs, une recherche correspond Ã  un objet avec les paramÃ¨tres suivants:
+ * Pour la recherche d'utilisateurs, une recherche correspond à  un objet avec les paramètres suivants:
  * *  {
- *    _id :         le numï¿½ro d'identification de l'objet
- *    keywords:     le/les mots-clefs utilisï¿½s lors de la requï¿½te
- *    date:         la date de la requï¿½te
+ *    _id :         le numéro d'identification de l'objet
+ *    keywords:     le/les mots-clefs utilisés lors de la requête
+ *    date:         la date de la requête
  *    type:         "users"
- *    args:         le/les arguments utilisï¿½s lors de la requï¿½te
- *    result:       le rÃ©sultat de la requÃªte (array contenant les donnÃ©es sur les utilisateurs)
- *    integrate:    indique si l'objet ï¿½ dï¿½jï¿½ ï¿½tï¿½ parsï¿½ et intï¿½grï¿½ dans la collection d'URLs (0 si non)
+ *    args:         le/les arguments utilisés lors de la requête
+ *    result:       le résultat de la requête (array contenant les données sur les utilisateurs)
+ *    integrate:    indique si l'objet à déjà été parsé et intégré dans la collection d'URLs (0 si non)
  *  }
  */
 
@@ -37,6 +37,7 @@ var mongoClient = require('mongodb').MongoClient;
 var twitter = require('./../api_request/twitter.js');
 
 function statusSearch(keyword, num, opt_args, callback){
+// Fonction de recherche de tweets (statuts) sur Twitter et stockage dans la DB dans la collection twitter
     if (typeof opt_args === 'function') {
         callback = opt_args;
         opt_args = {};
@@ -57,6 +58,7 @@ function statusSearch(keyword, num, opt_args, callback){
 }
 
 function usersSearch(keyword, num, opt_args, callback){
+// Fonction de recherche d'utilisateurs sur Twitter et stockage dans la DB dans la collection twitter
     if (typeof opt_args === 'function') {
         callback = opt_args;
         opt_args = {};
@@ -71,6 +73,7 @@ function usersSearch(keyword, num, opt_args, callback){
 }
 
 function userStatus(id, num, opt_args, callback){
+// Fonction de recherche de tweets d'un utilisateur particulier sur Twitter et stockage dans la DB dans la collection twitter
     if (typeof opt_args === 'function') {
         callback = opt_args;
         opt_args = {};
@@ -91,7 +94,7 @@ function userStatus(id, num, opt_args, callback){
 }
 
 function statusSearchOld(keyword, num, opt_args, callback){
-//Recherche de postes plus vieux que ceux stockÃ©s dans la base de donnÃ©e MongoDB pour un mot-clef particulier
+//Recherche de postes plus vieux que ceux stockés dans la base de donnée MongoDB pour un mot-clef particulier
     if (typeof opt_args === 'function') {
         callback = opt_args;
         opt_args = {};
@@ -106,7 +109,7 @@ function statusSearchOld(keyword, num, opt_args, callback){
 }
 
 function statusSearchNew(keyword, num, opt_args, callback){
-//Recherche de postes plus rÃ©cents que ceux stockÃ©s dans la base de donnÃ©e MongoDB pour un mot-clef particulier
+//Recherche de postes plus récents que ceux stockés dans la base de donnée MongoDB pour un mot-clef particulier
     if (typeof opt_args === 'function') {
         callback = opt_args;
         opt_args = {};
@@ -121,7 +124,7 @@ function statusSearchNew(keyword, num, opt_args, callback){
 }
 
 function userStatusOld(id, num, opt_args, callback){
-//Recherche de postes plus vieux que ceux stockÃ©s dans la base de donnÃ©e MongoDB pour un auteur particulier
+//Recherche de postes plus vieux que ceux stockés dans la base de donnée MongoDB pour un auteur particulier
     if (typeof opt_args === 'function') {
         callback = opt_args;
         opt_args = {};
@@ -136,7 +139,7 @@ function userStatusOld(id, num, opt_args, callback){
 }
 
 function userStatusNew(id, num, opt_args, callback){
-//Recherche de postes plus rÃ©cents que ceux stockÃ©s dans la base de donnÃ©e MongoDB pour un auteur particulier
+//Recherche de postes plus récents que ceux stockÃ©s dans la base de donnée MongoDB pour un auteur particulier
     if (typeof opt_args === 'function') {
         callback = opt_args;
         opt_args = {};
