@@ -54,34 +54,81 @@ function go(type, args, callback) {
             args.maxResults = item.num;
             setTimeout(function () {
                 search(type, args, function(err, data, nextRequest){
-                    if (err) {callback()}
-                    args.pageToken = nextRequest;
-                    callback(null, data)
+                    if (err) {callback();}
+                    else {
+                        if (type === 'activities' || type === 'people'){var max = 15;}
+                        else if (type === 'activitiesUser') {var max = 90;}
+                        if (data.length < max) {args.pageToken = 'STOP'}
+                        else {args.pageToken = nextRequest;}
+                        callback(null, data);
+                    }
                 });
             }, 200);
         },
         function (err, response) {
-            if (err) callback(err);
-            callback(null, response);
+            if (err) {
+                callback(err);
+            }
+            else {
+                delete args.auth;
+                if (args.pageToken === 'STOP') {delete args.pageToken;}
+                if (type === 'activities' || type === 'people') {var keyword = args.query;}
+                else if (type === 'activitiesUser') {var keyword = args.userId;}
+                var results = [];
+                if (response === undefined){callback(null, results);}
+                else {
+                    for (var i = 0; i < response.length; i++) {
+                        var post = response[i];
+                        if ((i>0 && post.id != response[i-1].id) || (i === 0)) { //évite les doublons
+                            post.published = new Date(post.published); // formate la date published dans un format Date
+                            var result = {
+                                keywords: keyword,
+                                date: new Date(),
+                                type: 'post',
+                                args: args,
+                                result: post
+                            };
+                            results.push(result);
+                        }
+                    }
+                 }
+             callback(null, results);
+            }
         }
     );
 }
 
 function search(type, args, callback) {
 // recherche en utilisant l'API Google+ de Google
-    if (type === 'activities' || 'activitiesUser'){ var request = plus.activities;}
-    else if (type === 'people'){ var request = plus.people;}
-    if (type === 'activities' || 'people') {
-        request.search(args, function (err, data) {
-            if (err) callback(err);
-            callback(null, data.items, data.nextPageToken);
-        });
-    }
-    else if (type === 'activitiesUser') {
-        request.list(args, function (err, data) {
-            if (err) callback(err);
-            callback(null, data.items, data.nextPageToken);
-        });
+    if (args.pageToken === 'STOP'){callback(null, []);}
+    else {
+        console.log('pew pew');
+        if (type === 'activities' || 'activitiesUser') {
+            var request = plus.activities;
+        }
+        else if (type === 'people') {
+            var request = plus.people;
+        }
+        if (type === 'activities' || type === 'people') {
+            request.search(args, function (err, data) {
+                if (err) {
+                    callback(err);
+                }
+                else {
+                    callback(null, data.items, data.nextPageToken);
+                }
+            });
+        }
+        else if (type === 'activitiesUser') {
+            request.list(args, function (err, data) {
+                if (err) {
+                    callback(err);
+                }
+                else {
+                    callback(null, data.items, data.nextPageToken);
+                }
+            });
+        }
     }
 }
 

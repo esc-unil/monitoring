@@ -37,7 +37,7 @@ function go(args, callback) {
                         callback();
                     }
                     else {
-                        if (data.length < 50) {args.pageToken = 'STOP';}
+                        if (data.length < 40) {args.pageToken = 'STOP';}
                         else {args.pageToken = nextRequest;}
                         callback(null, data);
                     }
@@ -50,6 +50,7 @@ function go(args, callback) {
             }
             else {
                 delete args.auth;
+                if (args.pageToken === 'STOP'){delete args.pageToken}
                 var results = [];
                 for (var i = 0; i < response.length; i++) {
                     var post = response[i];

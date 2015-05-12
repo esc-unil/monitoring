@@ -55,8 +55,8 @@ function go(type, args, callback) {
                 if (err) {callback();}
                 else {
                     if (type === 'tweets' || type === 'userTimeline') {
-                        if (type === 'tweets' && data.length < 100) {args.max_id = 'STOP';}
-                        else if (type === 'userTimeline' && data.length < 200) {args.max_id = 'STOP';}
+                        if (type === 'tweets' && data.length < 90) {args.max_id = 'STOP';}
+                        else if (type === 'userTimeline' && data.length < 190) {args.max_id = 'STOP';}
                         else {args.max_id = data[data.length-1].id_str;}
                     }
                     callback(null, data);
@@ -75,6 +75,7 @@ function go(type, args, callback) {
                 var results = [];
                 if (response === undefined){callback(null, results);}
                 else {
+                    if (args.max_id === 'STOP') {delete args.max_id;}
                     for (var i = 0; i < response.length; i++) {
                         var post = response[i];
                         if ((i>0 && post.id != response[i-1].id) || (i === 0)) { //évite les doublons
