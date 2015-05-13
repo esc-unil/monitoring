@@ -73,7 +73,7 @@ function usersSearch(keyword, num, opt_args, callback){
 }
 
 function userStatus(id, num, opt_args, callback){
-// Fonction de recherche d'activités d'un utilisateur particulier sur Google+ et stockage dans la DB dans la collection google_plus
+// Fonction de recherche d'activités d'un utilisateur particulier et stockage dans la DB dans la collection google_plus (num = 20, max)
     if (typeof opt_args === 'function') {
         callback = opt_args;
         opt_args = {};
@@ -126,7 +126,7 @@ function statusSearchNew(keyword, num, opt_args, callback){
 }
 
 function userStatusNew(id, num, opt_args, callback){
-// Fonction de recherche d'activités plus récente que celle de la DB pour un utilisateur particulier (20 res max)
+// Fonction de recherche d'activités plus récente que celle de la DB pour un utilisateur particulier (num = 20, max)
     if (typeof opt_args === 'function') {
         callback = opt_args;
         opt_args = {};
@@ -191,16 +191,8 @@ function dateLastPost(keyword, callback){
     });
 }
 
-
 exports.statusSearch = statusSearch;
 exports.usersSearch = usersSearch;
 exports.userStatus = userStatus;
 exports.statusSearchNew = statusSearchNew;
 exports.userStatusNew = userStatusNew;
-
-
-//statusSearch('steroid',15,function(a,b){console.log(a);});
-//statusSearchNew('steroid',200,function(a,b){console.log(a);});
-//userStatus('102090703178046743178',10,function(a,b){console.log(a);});
-//userStatusNew('117672991579759908074',20,function(a,b){console.log(a);});
-//usersSearch('steroid',10,function(a,b){console.log(a);});
