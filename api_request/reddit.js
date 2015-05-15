@@ -56,19 +56,21 @@ function search(subreddit, args, callback) {
             var results = [];
             if (data === undefined){callback(null, results);}
             else {
-                for (var i = 0; i < data.children.length; i++) {
-                    var post = data.children[i].data;
-                    post.created = new Date(post.created_utc*1000); // formate la date created dans un format Date
-                    var result = {
-                        keywords: args.q,
-                        date: new Date(),
-                        type: subreddit,
-                        args: args,
-                        result: post
-                    };
-                    results.push(result);
-                }
-                callback(null, results);
+                try {
+                    for (var i = 0; i < data.children.length; i++) {
+                        var post = data.children[i].data;
+                        post.created = new Date(post.created_utc * 1000); // formate la date created dans un format Date
+                        var result = {
+                            keywords: args.q,
+                            date: new Date(),
+                            type: subreddit,
+                            args: args,
+                            result: post
+                        };
+                        results.push(result);
+                    }
+                    callback(null, results);
+                } catch (ex) {console.log(ex);}
             }
         }
     })
