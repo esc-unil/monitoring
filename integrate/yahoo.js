@@ -52,7 +52,7 @@ function getURL(target, callback) {
                         );
                     },
                     function (err) {
-                        db.close()
+                        db.close();
                         callback(err);
                     }
                 );
