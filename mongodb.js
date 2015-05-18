@@ -26,9 +26,6 @@ function insert(col, object, callback){
                     callback(err);
                 }
                 else {
-                    if (object.result != undefined){ var length = object.result.length.toString();} //pour les SEO
-                    else {var length = object.length.toString();}
-                    console.log(new Date() + ': Inserted request into the ' + col + ' collection (length results: ' + length + ')');
                     db.close();
                     callback(null, object);
                 }
@@ -37,5 +34,48 @@ function insert(col, object, callback){
     });
 }
 
+function find(col, object, callback){
+    mongoClient.connect(mongoPath, function(err, db) {
+        if (err) {callback(err);}
+        else {
+            var collection = db.collection(col);
+            collection.find(object).toArray(function(err, docs) {
+                if (err) {
+                    db.close();
+                    callback(err);
+                }
+                else {
+                    db.close();
+                    callback(null, docs);
+                }
+            });
+
+        }
+    });
+}
+
+function update(col, find, update, callback){
+    mongoClient.connect(mongoPath, function(err, db) {
+        if (err) {callback(err);}
+        else {
+            var collection = db.collection(col);
+            collection.update(find, update, function(err, result) {
+                if (err) {
+                    db.close();
+                    callback(err);
+                }
+                else {
+                    db.close();
+                    callback(null, result);
+                }
+            });
+        }
+    });
+}
+
+
 exports.insert = insert;
+exports.find = find;
+exports.update = update;
+exports.ObjectId = mongodb.ObjectID;
 exports.mongoPath = mongoPath;
