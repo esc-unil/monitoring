@@ -3,12 +3,15 @@
  * Created by tpineau
  */
 
-var keys = require('./../keys.json');
 var request = require('request');
+var keys = require('./../keys.json');
 
-function importIO(api, callback){
-    var url = "https://api.import.io/store/data/" + api + "/_query?_user=" + keys.importioUser + "&_apikey=" + keys.importioKey;
+var user = keys.importioUser;
+var apikey = keys.importioKey;
 
+function importIO(api, webpage, callback){
+    var url = "https://api.import.io/store/data/" + api + '/_query?input/webpage/url=' + webpage
+        + "&_user=" + user + "&_apikey=" + apikey;
     var options = {
         url: url,
         headers: {
@@ -16,12 +19,12 @@ function importIO(api, callback){
             'Content-Type': 'application/json'
         }
     };
-
-
     request(options, function (err, response, body) {
         if (err) {callback(err);}
-        else {callback(null,body);}
+        else {callback(null, JSON.parse(body).results);}
     })
 }
 
-importIO('4a1b21c6-22ce-452a-9b9f-e52b2ac33338', function(err,res){console.log(res);}) //ozironking
+importIO('e0beea36-aed2-4fbf-8f26-2b31951878e4', 'http://www.muscletalk.co.uk/Testosterone-Other-Steroids-f10.aspx', function(err,res){console.log(JSON.stringify(res));});
+
+
