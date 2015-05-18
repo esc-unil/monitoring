@@ -4,38 +4,61 @@
  */
 
 var mongo = require('./../mongodb.js');
+var mongoClient = require('mongodb').MongoClient;
 var async = require("async");
 
-function getURL(callback) {
-    mongo.find('google', {}, function (err, res) {
-        if (err) {callback(err);}
-        else {
-            for (var i = 0; i < res.length; i++) {
-                var obj = res[i];
-                mongo.update('google', {_id:mongo.ObjectId(obj._id)}, {$set: {integrate:1}}, function(err){
-                    if (err) console.log(obj._id, err);
-                });
-                for (var j=0; j < obj.result.length; j++){
-                    var item = obj.result[j];
-                    var result = {
-                        url: item.link,
-                        keywords: obj.keywords,
-                        date: obj.date,
-                        platform: 'google',
-                        type: obj.type,
-                        info:{
-                            ranking:j+1
-                        }
-                    };
-                    mongo.insert('urls', result, function (err){
-                        if (err) {console.log(err);}
-                    })
-                }
+function getURL(target, callback) {
+    mongoClient.connect(mongo.mongoPath, function(err, db) {
+        db.collection('google').find(target).toArray(function (err, res) {
+            if (err) {
+                callback(err);
             }
-            callback(null);
-        }
+            else {
+                async.eachLimit(
+                    res,
+                    20,
+                    function (obj, cbObj) {
+                        db.collection('google').update({_id: mongo.ObjectId(obj._id)}, {$set: {integrate: 1}}, function (err) {
+                            if (err) console.log(obj._id, err);
+                        });
+                        var rank = 1;
+                        async.eachSeries(
+                            obj.result,
+                            function (item, cbItem) {
+                                var result = {
+                                    url: item.link,
+                                    keywords: obj.keywords,
+                                    date: obj.date,
+                                    platform: 'google',
+                                    type: obj.type,
+                                    info: {
+                                        ranking: rank
+                                    }
+                                };
+                                db.collection('urls').insert(result, function (err) {
+                                    if (err) {
+                                        console.log(err);
+                                    }
+                                    rank++;
+                                    cbItem();
+                                })
+                            },
+                            function (err) {
+                                if (err) {
+                                    console.log(err);
+                                }
+                                cbObj()
+                            }
+                        );
+                    },
+                    function (err) {
+                        db.close()
+                        callback(err);
+                    }
+                );
+            }
+        });
     });
 }
 
 exports.getURL = getURL;
-

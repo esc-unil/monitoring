@@ -73,7 +73,6 @@ function update(col, find, update, callback){
     });
 }
 
-
 exports.insert = insert;
 exports.find = find;
 exports.update = update;
