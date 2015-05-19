@@ -4,60 +4,47 @@
  *
  * Script de recherche sur Google+
  *
- * Pour statusSearch et userStatus (recherche de postes (activités) par mots-clefs ou par utilisateur, respectivement):
- * Chaques postes correspond à un objet avec les paramètres suivants:
+ * Pour statusSearch et userStatus (recherche de postes (activitï¿½s) par mots-clefs ou par utilisateur, respectivement):
+ * Chaques postes correspond ï¿½ un objet avec les paramï¿½tres suivants:
  *  {
- *    _id :         le numéro d'identification de l'objet
- *    keywords:     le/les mots-clefs utilisés lors de la requête ou l'id de l'utilisateur pour la recherche de postes
- *    date:         la date de la requête
+ *    _id :         le numï¿½ro d'identification de l'objet
+ *    keywords:     le/les mots-clefs utilisï¿½s lors de la requï¿½te ou l'id de l'utilisateur pour la recherche de postes
+ *    date:         la date de la requï¿½te
  *    type:         "post"
- *    args:         le/les arguments utilisés lors de la requête
- *    result:       les données du poste
- *    integrate:    indique si l'objet à déjà été parsé et intégré dans la collection d'URLs (0 si non)
+ *    args:         le/les arguments utilisï¿½s lors de la requï¿½te
+ *    result:       les donnï¿½es du poste
+ *    integrate:    indique si l'objet ï¿½ dï¿½jï¿½ ï¿½tï¿½ parsï¿½ et intï¿½grï¿½ dans la collection d'URLs (0 si non)
  *  }
  *
  *  Les fonctions statusSearchNew / userStatusNew permettent de rechercher les postes
- *  plus récents que ceux contenus dans la DB pour un mot-clef ou un utilisateur spécifique.
+ *  plus rï¿½cents que ceux contenus dans la DB pour un mot-clef ou un utilisateur spï¿½cifique.
  *
  *
- * Pour la recherche d'utilisateurs ou de pages, une recherche correspond à  un objet avec les paramètres suivants:
+ * Pour la recherche d'utilisateurs ou de pages, une recherche correspond ï¿½ un objet avec les paramï¿½tres suivants:
  * *  {
- *    _id :         le numéro d'identification de l'objet
- *    keywords:     le/les mots-clefs utilisés lors de la requête
- *    date:         la date de la requête
+ *    _id :         le numï¿½ro d'identification de l'objet
+ *    keywords:     le/les mots-clefs utilisï¿½s lors de la requï¿½te
+ *    date:         la date de la requï¿½te
  *    type:         "users"
- *    args:         le/les arguments utilisés lors de la requête
- *    result:       le résultat de la requête (array contenant les données sur les utilisateurs)
- *    integrate:    indique si l'objet à déjà été parsé et intégré dans la collection d'URLs (0 si non)
+ *    args:         le/les arguments utilisï¿½s lors de la requï¿½te
+ *    result:       le rï¿½sultat de la requï¿½te (array contenant les donnï¿½es sur les utilisateurs)
+ *    integrate:    indique si l'objet ï¿½ dï¿½jï¿½ ï¿½tï¿½ parsï¿½ et intï¿½grï¿½ dans la collection d'URLs (0 si non)
  *  }
  */
 
-var mongo = require('./../mongodb.js');
-var mongoClient = require('mongodb').MongoClient;
 var gplus = require('./../api_request/google_plus.js');
 
-function statusSearch(keyword, num, opt_args, callback){
-// Fonction de recherche d'activités sur Google+ et stockage dans la DB dans la collection google_plus
-    if (typeof opt_args === 'function') {
-        callback = opt_args;
-        opt_args = {};
-    }
-    gplus.statusSearch(keyword, num, opt_args, function(err, response){
-        if (err) {callback(err);}
-        else {
-            var results = [];
-            for (var i = 0; i < response.length; i++) {
-                response[i].integrate = 0;
-                results.push(response[i]);
-            }
-            if (results.length != 0) {
-                mongo.insert('google_plus', results, callback);
-            }
-        }
-    });
+function statusSearch(db, keyword, num, opt_args, callback){
+// Fonction de recherche d'activitï¿½s sur Google+ et stockage dans la DB dans la collection google_plus
+    tweetSearch(gplus.statusSearch, db, keyword, num, opt_args, callback)
 }
 
-function usersSearch(keyword, num, opt_args, callback){
+function userStatus(db, id, num, opt_args, callback){
+// Fonction de recherche d'activitï¿½s d'un utilisateur particulier et stockage dans la DB dans la collection google_plus (num = 20, max)
+    tweetSearch(gplus.userStatus, db, id, num, opt_args, callback)
+}
+
+function usersSearch(db, keyword, num, opt_args, callback){
 // Fonction de recherche d'utilisateurs ou de pages sur Google+ et stockage dans la DB dans la collection twitter
     if (typeof opt_args === 'function') {
         callback = opt_args;
@@ -67,18 +54,28 @@ function usersSearch(keyword, num, opt_args, callback){
         if (err) callback(err);
         else {
             response.integrate = 0;
-            mongo.insert('google_plus', response, callback);
+            db.collection('google_plus').insert(response, callback);
         }
     });
 }
 
-function userStatus(id, num, opt_args, callback){
-// Fonction de recherche d'activités d'un utilisateur particulier et stockage dans la DB dans la collection google_plus (num = 20, max)
+function statusSearchNew(db, keyword, num, opt_args, callback){
+// Fonction de recherche d'activitï¿½s plus rï¿½cente que celle de la DB pour un mot-clef particulier
+    searchNew(gplus.statusSearch, db, keyword, num, opt_args, callback);
+}
+
+function userStatusNew(db, id, num, opt_args, callback){
+// Fonction de recherche d'activitï¿½s plus rï¿½cente que celle de la DB pour un utilisateur particulier (num = 20, max)
+    searchNew(gplus.userStatus, db, id, num, opt_args, callback);
+}
+
+function tweetSearch(fct, db, keyword, num, opt_args, callback){
+// Fonction de recherche d'activitï¿½s sur Google+ et stockage dans la DB dans la collection google_plus
     if (typeof opt_args === 'function') {
         callback = opt_args;
         opt_args = {};
     }
-    gplus.userStatus(id, num, opt_args, function(err, response){
+    fct(keyword, num, opt_args, function(err, response){
         if (err) {callback(err);}
         else {
             var results = [];
@@ -87,24 +84,25 @@ function userStatus(id, num, opt_args, callback){
                 results.push(response[i]);
             }
             if (results.length != 0) {
-                mongo.insert('google_plus', results, callback);
+                db.collection('google_plus').insert(results, callback);
             }
+            else {callback(null, {ops:[]});}
         }
     });
 }
 
-function statusSearchNew(keyword, num, opt_args, callback){
-// Fonction de recherche d'activités plus récente que celle de la DB pour un mot-clef particulier
+function searchNew(fct, db, keyword, num, opt_args, callback){
+// Fonction de recherche d'activitï¿½s plus rï¿½cente que celle de la DB pour un utilisateur particulier (num = 20, max)
     if (typeof opt_args === 'function') {
         callback = opt_args;
         opt_args = {};
     }
-    dateLastPost(keyword, function(err, lastPost) {
+    dateLastPost(db, keyword, function(err, lastPost) {
         if (err) {
             console.log(err);
         }
         else {
-            gplus.statusSearch(keyword, num, opt_args, function (err, response) {
+            fct(keyword, num, opt_args, function (err, response) {
                 if (err) {
                     callback(err);
                 }
@@ -117,74 +115,25 @@ function statusSearchNew(keyword, num, opt_args, callback){
                         }
                     }
                     if (results.length != 0) {
-                        mongo.insert('google_plus', results, callback);
+                        db.collection('google_plus').insert(results, callback);
                     }
+                    else {callback(null, {ops:[]});}
                 }
             });
         }
     });
 }
 
-function userStatusNew(id, num, opt_args, callback){
-// Fonction de recherche d'activités plus récente que celle de la DB pour un utilisateur particulier (num = 20, max)
-    if (typeof opt_args === 'function') {
-        callback = opt_args;
-        opt_args = {};
-    }
-    dateLastPost(id, function(err, lastPost) {
-        if (err) {
-            console.log(err);
-        }
-        else {
-            gplus.userStatus(id, num, opt_args, function (err, response) {
-                if (err) {
-                    callback(err);
-                }
+function dateLastPost(db, keyword, callback){
+    db.collection('google_plus').count({keywords: keyword, type: 'post'}, function(err, n){
+        if (n === 0){callback(null, null);}
+        else{
+            db.collection('google_plus').find({keywords: keyword, type: 'post'}).sort({'result.published': -1}).limit(1).toArray(function (err, res) {
+                if (err) {callback(err);}
                 else {
-                    var results = [];
-                    for (var i = 0; i < response.length; i++) {
-                        if (response[i].result.published > lastPost) {
-                            response[i].integrate = 0;
-                            results.push(response[i]);
-                        }
-                    }
-                    if (results.length != 0) {
-                        mongo.insert('google_plus', results, callback);
-                    }
-                }
-            });
-        }
-    });
-}
-
-function dateLastPost(keyword, callback){
-    mongoClient.connect(mongo.mongoPath, function(err, db) {
-        if (err) {callback(err);}
-        else {
-            var collection = db.collection('google_plus');
-            collection.count(function(err, n){
-                if (n === 0){
-                    db.close();
-                    callback(null, null);
-                }
-                else{
-                    collection.count({keywords:keyword, type: 'post'}, function(err, n1){
-                        if (n1 === 0){
-                            db.close();
-                            callback(null, null);
-                        }
-                        else{
-                            collection.find({keywords: keyword, type: 'post'}).sort({'result.published': -1}).limit(1).toArray(function (err, res) {
-                                if (err) {callback(err);}
-                                else {
-                                    db.close();
-                                    callback(null, res[0].result.published);
-                                }
-                            });
-
-                        }
-                    });
-
+                    var resp = res[0].result.published;
+                    console.log(resp);
+                    callback(null, resp);
                 }
             });
         }
