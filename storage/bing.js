@@ -16,47 +16,30 @@
  *  }
  */
 
-var mongo = require('./../mongodb.js');
 var bing = require('./../api_request/bing.js');
 
-function webSearch(keyword, num, opt_args, callback){
-    if (typeof opt_args === 'function') {
-        callback = opt_args;
-        opt_args = null;
-    }
-    bing.webSearch(keyword, num, opt_args, function(err, response){
-        if (err) callback(err);
-        else {
-            response.integrate = 0;
-            mongo.insert('bing', response, callback);
-        }
-    });
+function webSearch(db, keyword, num, opt_args, callback){
+    search(bing.webSearch, db, keyword, num, opt_args, callback);
 }
 
-function imagesSearch(keyword, num, opt_args, callback){
-    if (typeof opt_args === 'function') {
-        callback = opt_args;
-        opt_args = null;
-    }
-    bing.imagesSearch(keyword, num, opt_args, function(err, response){
-        if (err) callback(err);
-        else {
-            response.integrate = 0;
-            mongo.insert('bing', response, callback);
-        }
-    });
+function imagesSearch(db, keyword, num, opt_args, callback){
+    search(bing.imagesSearch, db, keyword, num, opt_args, callback);
 }
 
-function videosSearch(keyword, num, opt_args, callback){
+function videosSearch(db, keyword, num, opt_args, callback){
+    search(bing.videosSearch, db, keyword, num, opt_args, callback);
+}
+
+function search(fct, db, keyword, num, opt_args, callback){
     if (typeof opt_args === 'function') {
         callback = opt_args;
         opt_args = null;
     }
-    bing.videosSearch(keyword, num, opt_args, function(err, response){
+    fct(keyword, num, opt_args, function(err, response){
         if (err) callback(err);
         else {
             response.integrate = 0;
-            mongo.insert('bing', response, callback);
+            db.collection('bing').insert(response, callback);
         }
     });
 }

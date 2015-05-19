@@ -19,31 +19,19 @@
 var google = require('./../api_request/google.js');
 
 function webSearch(db, keyword, num, opt_args, callback){
-    if (typeof opt_args === 'function') {
-        callback = opt_args;
-        opt_args = null;
-    }
-    google.webSearch(keyword, num, opt_args, function(err, response){
-        if (err) callback(err);
-        else {
-            var result = [];
-            for (var i = 0; i < response.result.length; i++) {
-                delete response.result[i].pagemap;
-                result.push(response.result[i]);
-            }
-            response.result = result;
-            response.integrate = 0;
-            db.collection('google').insert(response, callback);
-        }
-    });
+    search(google.webSearch, db, keyword, num, opt_args, callback);
 }
 
 function imagesSearch(db, keyword, num, opt_args, callback){
+    search(google.imagesSearch, db, keyword, num, opt_args, callback);
+}
+
+function search(fct, db, keyword, num, opt_args, callback){
     if (typeof opt_args === 'function') {
         callback = opt_args;
         opt_args = null;
     }
-    google.imagesSearch(keyword, num, opt_args, function(err, response){
+    fct(keyword, num, opt_args, function(err, response){
         if (err) callback(err);
         else {
             var result = [];

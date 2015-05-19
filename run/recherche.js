@@ -19,9 +19,11 @@ var youtube = require('./../storage/youtube.js');
 mongoClient.connect(mongoPath, function(err, db) {
     if (err){console.log(err);}
     else {
-        bing.imagesSearch(db,'steroid', 10, function (a, b) {db.close();console.log('done');});
+
         /*
         google.imagesSearch(db,'steroid', 10, function (a, b) {db.close();console.log('done');});
+        bing.webSearch(db,'steroid', 10, function (a, b) {db.close();console.log('done');});
+        yahoo.webSearch(db,'steroid', 50, function (a, b) {db.close();console.log('done');});
         youtube.searchNew(db, 'steroid', 10, function (a, b) {db.close();console.log('done');});
         */
 

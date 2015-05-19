@@ -16,33 +16,26 @@
  *  }
  */
 
-var mongo = require('./../mongodb.js');
 var yahoo = require('./../api_request/yahoo.js');
 
-function webSearch(keyword, num, opt_args, callback){
-    if (typeof opt_args === 'function') {
-        callback = opt_args;
-        opt_args = null;
-    }
-    yahoo.webSearch(keyword, num, opt_args, function(err, response){
-        if (err) callback(err);
-        else {
-            response.integrate = 0;
-            mongo.insert('yahoo', response, callback);
-        }
-    });
+function webSearch(db, keyword, num, opt_args, callback){
+    search(yahoo.webSearch, db, keyword, num, opt_args, callback);
 }
 
-function imagesSearch(keyword, num, opt_args, callback){
+function imagesSearch(db, keyword, num, opt_args, callback){
+    search(yahoo.imagesSearch, db, keyword, num, opt_args, callback);
+}
+
+function search(fct, db, keyword, num, opt_args, callback){
     if (typeof opt_args === 'function') {
         callback = opt_args;
         opt_args = null;
     }
-    yahoo.imagesSearch(keyword, num, opt_args, function(err, response){
+    fct(keyword, num, opt_args, function(err, response){
         if (err) callback(err);
         else {
             response.integrate = 0;
-            mongo.insert('yahoo', response, callback);
+            db.collection('yahoo').insert(response, callback);
         }
     });
 }
