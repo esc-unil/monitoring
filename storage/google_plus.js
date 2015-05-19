@@ -35,17 +35,17 @@
 var gplus = require('./../api_request/google_plus.js');
 
 function statusSearch(db, keyword, num, opt_args, callback){
-// Fonction de recherche d'activit�s sur Google+ et stockage dans la DB dans la collection google_plus
-    tweetSearch(gplus.statusSearch, db, keyword, num, opt_args, callback)
+// Fonction de recherche d'activit�s sur Google+ et stockage dans la DB
+    activitiesSearch(gplus.statusSearch, db, keyword, num, opt_args, callback)
 }
 
 function userStatus(db, id, num, opt_args, callback){
-// Fonction de recherche d'activit�s d'un utilisateur particulier et stockage dans la DB dans la collection google_plus (num = 20, max)
-    tweetSearch(gplus.userStatus, db, id, num, opt_args, callback)
+// Fonction de recherche d'activit�s d'un utilisateur particulier et stockage dans la DB (num = 20, max)
+    activitiesSearch(gplus.userStatus, db, id, num, opt_args, callback)
 }
 
 function usersSearch(db, keyword, num, opt_args, callback){
-// Fonction de recherche d'utilisateurs ou de pages sur Google+ et stockage dans la DB dans la collection twitter
+// Fonction de recherche d'utilisateurs ou de pages sur Google+ et stockage dans la DB
     if (typeof opt_args === 'function') {
         callback = opt_args;
         opt_args = {};
@@ -69,8 +69,7 @@ function userStatusNew(db, id, num, opt_args, callback){
     searchNew(gplus.userStatus, db, id, num, opt_args, callback);
 }
 
-function tweetSearch(fct, db, keyword, num, opt_args, callback){
-// Fonction de recherche d'activit�s sur Google+ et stockage dans la DB dans la collection google_plus
+function activitiesSearch(fct, db, keyword, num, opt_args, callback){
     if (typeof opt_args === 'function') {
         callback = opt_args;
         opt_args = {};
@@ -92,7 +91,6 @@ function tweetSearch(fct, db, keyword, num, opt_args, callback){
 }
 
 function searchNew(fct, db, keyword, num, opt_args, callback){
-// Fonction de recherche d'activit�s plus r�cente que celle de la DB pour un utilisateur particulier (num = 20, max)
     if (typeof opt_args === 'function') {
         callback = opt_args;
         opt_args = {};
