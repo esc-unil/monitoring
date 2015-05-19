@@ -35,7 +35,7 @@ function search(fct, db, keyword, num, opt_args, callback){
         if (err) callback(err);
         else {
             response.integrate = 0;
-            db.collection('yahoo').insert(response, callback(null, response.result.length));
+            db.collection('yahoo').insert(response, callback);
         }
     });
 }

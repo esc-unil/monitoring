@@ -42,9 +42,9 @@ function subredditSearch(db, keyword, num, subreddit, opt_args, callback){
                 results.push(response[i]);
             }
             if (results.length != 0) {
-                db.collection('reddit').insert(results, callback(null, results.length));
+                db.collection('reddit').insert(results, callback);
             }
-            else {callback(null, results.length);}
+            else {callback(null, {ops:[]});}
         }
     });
 }

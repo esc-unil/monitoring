@@ -41,7 +41,7 @@ function search(fct, db, keyword, num, opt_args, callback){
             }
             response.result = result;
             response.integrate = 0;
-            db.collection('google').insert(response, callback(null, response.result.length));
+            db.collection('google').insert(response, callback);
         }
     });
 }

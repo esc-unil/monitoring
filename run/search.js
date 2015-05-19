@@ -22,12 +22,13 @@ var reddit = require('./../storage/reddit.js');
 mongoClient.connect(mongoPath, function(err, db) {
     if (err){console.log(err);}
     else {
-        //reddit.searchNew(db, 'steroid', 10, null, function (a, b) {db.close();console.log('done', b);});
+        yahoo.webSearch(db, 'steroid', 10, function (a, b) {db.close();console.log('done', b.ops[0].result.length);});
         /*
-        google.imagesSearch(db,'steroid', 10, function (a, b) {db.close();console.log('done');});
-        bing.webSearch(db,'steroid', 10, function (a, b) {db.close();console.log('done');});
-        yahoo.webSearch(db,'steroid', 50, function (a, b) {db.close();console.log('done');});
-        youtube.searchNew(db, 'steroid', 10, function (a, b) {db.close();console.log('done', b);});
+        google.webSearch(db, 'steroid', 10, function (a, b) {db.close();console.log('done', b.ops[0].result.length);});
+        bing.webSearch(db, 'steroid', 10, function (a, b) {db.close();console.log('done', b.ops[0].result.length);});
+        yahoo.webSearch(db, 'steroid', 10, function (a, b) {db.close();console.log('done', b.ops[0].result.length);});
+        youtube.searchNew(db, 'steroid', 10, function (a, b) {db.close(); console.log('done', b.ops.length);});
+        reddit.searchOld(db, 'steroid', 10, null, function (a, b) {db.close(); console.log('done', b.ops.length);});
         */
 
     }
