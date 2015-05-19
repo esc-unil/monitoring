@@ -16,10 +16,9 @@
  *  }
  */
 
-var mongo = require('./../mongodb.js');
 var google = require('./../api_request/google.js');
 
-function webSearch(keyword, num, opt_args, callback){
+function webSearch(db, keyword, num, opt_args, callback){
     if (typeof opt_args === 'function') {
         callback = opt_args;
         opt_args = null;
@@ -28,18 +27,18 @@ function webSearch(keyword, num, opt_args, callback){
         if (err) callback(err);
         else {
             var result = [];
-            for (var i = 0; i < response.result.length; i++) { //retire le pagemap non utilisé et faisant planter l'intégration dans mongodb
+            for (var i = 0; i < response.result.length; i++) {
                 delete response.result[i].pagemap;
                 result.push(response.result[i]);
             }
             response.result = result;
             response.integrate = 0;
-            mongo.insert('google', response, callback);
+            db.collection('google').insert(response, callback);
         }
     });
 }
 
-function imagesSearch(keyword, num, opt_args, callback){
+function imagesSearch(db, keyword, num, opt_args, callback){
     if (typeof opt_args === 'function') {
         callback = opt_args;
         opt_args = null;
@@ -48,13 +47,13 @@ function imagesSearch(keyword, num, opt_args, callback){
         if (err) callback(err);
         else {
             var result = [];
-            for (var i = 0; i < response.result.length; i++) { //retire le pagemap non utilisé et faisant planter l'intégration dans mongodb
+            for (var i = 0; i < response.result.length; i++) {
                 delete response.result[i].pagemap;
                 result.push(response.result[i]);
             }
             response.result = result;
             response.integrate = 0;
-            mongo.insert('google', response, callback);
+            db.collection('google').insert(response, callback);
         }
     });
 }
