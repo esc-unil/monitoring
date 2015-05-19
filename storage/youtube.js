@@ -3,7 +3,7 @@
  * Created by tpineau
  *
  * Script de recherche sur Youtube et stockage des informations dans une banque de donn�e MongoDB
- * dans la collection youtube (les informations sur la DB sont stock�es dans le fichier keys.json).
+ * dans la collection youtube.
  *
  * Chaque vid�o correspond � un objet avec les param�tres suivants:
  *
@@ -19,13 +19,11 @@
  *
  * Les fonctions searchOld et searchNew permettent de rechercher les vid�os plus vielles ou plus r�centes (respectivement)
  * que celles contenues dans la DB pour un mot-clef particulier.
- *
  */
 
 var youtube = require('./../api_request/youtube.js');
 
 function videosSearch(db, keyword, num, opt_args, callback){
-// Fonction de recherche de vid�os sur Youtube et stockage dans la DB dans la collection youtube
     if (typeof opt_args === 'function') {
         callback = opt_args;
         opt_args = {};
@@ -39,15 +37,14 @@ function videosSearch(db, keyword, num, opt_args, callback){
                 results.push(response[i]);
             }
             if (results.length != 0) {
-                db.collection('youtube').insert(results, callback);
+                db.collection('youtube').insert(results, callback(null, results.length));
             }
-            else {callback();}
+            else {callback(null, results.length);}
         }
     });
 }
 
 function searchOld(db, keyword, num, opt_args, callback){
-//Recherche de vid�os plus vielles � celles stock�es dans la base de donn�e MongoDB pour un mot-clef sp�cifique
     if (typeof opt_args === 'function') {
         callback = opt_args;
         opt_args = {type:'video'};
@@ -62,7 +59,6 @@ function searchOld(db, keyword, num, opt_args, callback){
 }
 
 function searchNew(db, keyword, num, opt_args, callback){
-//Recherche de vid�os plus r�centes � celles stock�es dans la base de donn�e MongoDB pour un mot-clef sp�cifique
     if (typeof opt_args === 'function') {
         callback = opt_args;
         opt_args = {type:'video'};

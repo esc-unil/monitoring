@@ -3,7 +3,7 @@
  * Created by tpineau
  *
  * Script de recherche via l'API Yahoo et stockage des informations dans une banque de donnée MongoDB
- * dans la collection yahoo (les informations sur la DB sont stockées dans le fichier keys.json).
+ * dans la collection yahoo.
  * une recherche correspond à un objet avec les paramètres suivants:
  *  {
  *    _id :         le numéro d'identification de l'objet
@@ -35,7 +35,7 @@ function search(fct, db, keyword, num, opt_args, callback){
         if (err) callback(err);
         else {
             response.integrate = 0;
-            db.collection('yahoo').insert(response, callback);
+            db.collection('yahoo').insert(response, callback(null, response.result.length));
         }
     });
 }

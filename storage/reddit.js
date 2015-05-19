@@ -3,7 +3,7 @@
  * Created by tpineau
  *
  * Script de recherche de postes sur Reddit et stockage des informations dans une banque de donnée MongoDB
- * dans la collection reddit (les informations sur la DB sont stockées dans le fichier keys.json).
+ * dans la collection reddit.
  *
  * Chaques postes correspond à un objet avec les paramètres suivants:
  *  {
@@ -21,17 +21,14 @@
  *
  */
 
-var mongo = require('./../mongodb.js');
-var mongoClient = require('mongodb').MongoClient;
+
 var reddit = require('./../api_request/reddit.js');
 
-function redditSearch(keyword, num, opt_args, callback) {
-// Recherche de messages sur Reddit
-// Informations sur les arguments optionnels (opt_args): https://www.reddit.com/dev/api#GET_search
-    subredditSearch(keyword, num, null, opt_args, callback);
+function redditSearch(db, keyword, num, opt_args, callback) {
+    subredditSearch(db, keyword, num, null, opt_args, callback);
 }
 
-function subredditSearch(keyword, num, subreddit, opt_args, callback){
+function subredditSearch(db, keyword, num, subreddit, opt_args, callback){
     if (typeof opt_args === 'function') {
         callback = opt_args;
         opt_args = {};
@@ -45,79 +42,51 @@ function subredditSearch(keyword, num, subreddit, opt_args, callback){
                 results.push(response[i]);
             }
             if (results.length != 0) {
-                mongo.insert('reddit', results, callback);
+                db.collection('reddit').insert(results, callback(null, results.length));
             }
+            else {callback(null, results.length);}
         }
     });
 }
 
-function searchOld(keyword, num, subreddit, opt_args, callback){
-//Recherche de postes antérieur au plus vieux stockés dans la base de donnée MongoDB
+function searchOld(db, keyword, num, subreddit, opt_args, callback){
     if (typeof opt_args === 'function') {
         callback = opt_args;
         opt_args = {};
     }
-    after(keyword, subreddit, function(err, after){
+    cursor(db, 1, keyword, subreddit, function(err, after){
         if (err) {callback(err);}
         else {
             if (after != null) {opt_args.after = after;}
-            subredditSearch(keyword, num, subreddit, opt_args, callback);
+            subredditSearch(db, keyword, num, subreddit, opt_args, callback);
         }
     })
 }
 
-function searchNew(keyword, num, subreddit, opt_args, callback){
-//Recherche de postes précédents au plus récents stockés dans la base de donnée MongoDB
+function searchNew(db, keyword, num, subreddit, opt_args, callback){
     if (typeof opt_args === 'function') {
         callback = opt_args;
         opt_args = {};
     }
-    before(keyword, subreddit, function(err, before){
+    cursor(db, -1, keyword, subreddit, function(err, before){
         if (err) {callback(err);}
         else {
             if (before != null) {opt_args.before = before;}
-            subredditSearch(keyword, num, subreddit, opt_args, callback);
+            subredditSearch(db, keyword, num, subreddit, opt_args, callback);
         }
     })
 }
 
-function after(keyword, subreddit, callback){
-    cursor(1, keyword, subreddit, callback);
-}
-
-function before(keyword, subreddit, callback){
-    cursor(-1, keyword, subreddit, callback);
-}
-
-function cursor(cible, keyword, subreddit, callback){
-    mongoClient.connect(mongo.mongoPath, function(err, db) {
-        if (err) {callback(err);}
-        else {
-            var collection = db.collection('reddit');
-            collection.count(function(err, n){
-                if (n === 0){
-                    db.close();
-                    callback(null, null);
-                }
-                else{
-                    collection.count({keywords:keyword, type: subreddit}, function(err, n1){
-                        if (n1 === 0){
-                            db.close();
-                            callback(null, null);
-                        }
-                        else{
-                            collection.find({keywords: keyword, type: subreddit}).sort({'result.created': cible}).limit(1).toArray(function (err, res) {
-                                if (err) {callback(err);}
-                                else {
-                                    db.close();
-                                    console.log(res[0].result.name);
-                                    callback(null, res[0].result.name);
-                                }
-                            });
-
-                        }
-                    });
-
+function cursor(db, cible, keyword, type, callback){
+    db.collection('reddit').count({keywords:keyword, type: type}, function(err, n){
+        if (n === 0){callback(null, null);}
+        else{
+            db.collection('reddit').find({keywords: keyword, type: type}).sort({'result.created': cible}).limit(1).toArray(function (err, res) {
+                if (err) {callback(err);}
+                else {
+                    var resp = res[0].result.name;
+                    console.log(resp);
+                    callback(null, resp);
                 }
             });
         }

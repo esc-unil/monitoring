@@ -3,7 +3,7 @@
  * Created by tpineau
  *
  * Script de recherche via l'API Google et stockage des informations dans une banque de donnée MongoDB
- * dans la collection google (les informations sur la DB sont stockées dans le fichier keys.json).
+ * dans la collection google.
  * une recherche correspond à un objet avec les paramètres suivants:
  *  {
  *    _id :         le numéro d'identification de l'objet
@@ -41,7 +41,7 @@ function search(fct, db, keyword, num, opt_args, callback){
             }
             response.result = result;
             response.integrate = 0;
-            db.collection('google').insert(response, callback);
+            db.collection('google').insert(response, callback(null, response.result.length));
         }
     });
 }
