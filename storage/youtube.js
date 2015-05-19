@@ -2,32 +2,30 @@
 /**
  * Created by tpineau
  *
- * Script de recherche sur Youtube et stockage des informations dans une banque de donnée MongoDB
- * dans la collection youtube (les informations sur la DB sont stockées dans le fichier keys.json).
+ * Script de recherche sur Youtube et stockage des informations dans une banque de donnï¿½e MongoDB
+ * dans la collection youtube (les informations sur la DB sont stockï¿½es dans le fichier keys.json).
  *
- * Chaque vidéo correspond à un objet avec les paramètres suivants:
+ * Chaque vidï¿½o correspond ï¿½ un objet avec les paramï¿½tres suivants:
  *
  *  {
- *    _id :         le numéro d'identification de l'objet
- *    keywords:     le/les mots-clefs utilisés lors de la requête
- *    date:         la date de la requête
+ *    _id :         le numï¿½ro d'identification de l'objet
+ *    keywords:     le/les mots-clefs utilisï¿½s lors de la requï¿½te
+ *    date:         la date de la requï¿½te
  *    type:         "videos"
- *    args:         le/les arguments utilisés lors de la requête
- *    result:       les données de la vidéo
- *    integrate:    indique si l'objet à déjà été parsé et intégré dans la collection d'URLs (0 si non)
+ *    args:         le/les arguments utilisï¿½s lors de la requï¿½te
+ *    result:       les donnï¿½es de la vidï¿½o
+ *    integrate:    indique si l'objet ï¿½ dï¿½jï¿½ ï¿½tï¿½ parsï¿½ et intï¿½grï¿½ dans la collection d'URLs (0 si non)
  *  }
  *
- * Les fonctions searchOld et searchNew permettent de rechercher les vidéos plus vielles ou plus récentes (respectivement)
+ * Les fonctions searchOld et searchNew permettent de rechercher les vidï¿½os plus vielles ou plus rï¿½centes (respectivement)
  * que celles contenues dans la DB pour un mot-clef particulier.
  *
  */
 
-var mongo = require('./../mongodb.js');
-var mongoClient = require('mongodb').MongoClient;
 var youtube = require('./../api_request/youtube.js');
 
-function videosSearch(keyword, num, opt_args, callback){
-// Fonction de recherche de vidéos sur Youtube et stockage dans la DB dans la collection youtube
+function videosSearch(db, keyword, num, opt_args, callback){
+// Fonction de recherche de vidï¿½os sur Youtube et stockage dans la DB dans la collection youtube
     if (typeof opt_args === 'function') {
         callback = opt_args;
         opt_args = {};
@@ -41,80 +39,61 @@ function videosSearch(keyword, num, opt_args, callback){
                 results.push(response[i]);
             }
             if (results.length != 0) {
-                mongo.insert('youtube', results, callback);
+                db.collection('youtube').insert(results, callback);
             }
+            else {callback();}
         }
     });
 }
 
-function searchOld(keyword, num, opt_args, callback){
-//Recherche de vidéos plus vielles à celles stockées dans la base de donnée MongoDB pour un mot-clef spécifique
+function searchOld(db, keyword, num, opt_args, callback){
+//Recherche de vidï¿½os plus vielles ï¿½ celles stockï¿½es dans la base de donnï¿½e MongoDB pour un mot-clef spï¿½cifique
     if (typeof opt_args === 'function') {
         callback = opt_args;
         opt_args = {type:'video'};
     }
-    publishedBefore(keyword, opt_args.type + 's', function(err, publishedBefore){
+    publishedBefore(db, keyword, opt_args.type + 's', function(err, publishedBefore){
         if (err) {callback(err);}
         else {
             if (publishedBefore != null) {opt_args.publishedBefore = publishedBefore;}
-            videosSearch(keyword, num, opt_args, callback);
+            videosSearch(db, keyword, num, opt_args, callback);
         }
     })
 }
 
-function searchNew(keyword, num, opt_args, callback){
-//Recherche de vidéos plus récentes à celles stockées dans la base de donnée MongoDB pour un mot-clef spécifique
+function searchNew(db, keyword, num, opt_args, callback){
+//Recherche de vidï¿½os plus rï¿½centes ï¿½ celles stockï¿½es dans la base de donnï¿½e MongoDB pour un mot-clef spï¿½cifique
     if (typeof opt_args === 'function') {
         callback = opt_args;
         opt_args = {type:'video'};
     }
-    publishedAfter(keyword, opt_args.type + 's', function(err, publishedAfter){
+    publishedAfter(db, keyword, opt_args.type + 's', function(err, publishedAfter){
         if (err) {callback(err);}
         else {
             if (publishedAfter != null) {opt_args.publishedAfter = publishedAfter;}
-            videosSearch(keyword, num, opt_args, callback);
+            videosSearch(db, keyword, num, opt_args, callback);
         }
     })
 }
 
-function publishedAfter(keyword, type, callback){
-    cursor(-1, keyword, type, callback);
+function publishedAfter(db, keyword, type, callback){
+    cursor(db, -1, keyword, type, callback);
 }
 
-function publishedBefore(keyword, type, callback){
-    cursor(1, keyword, type, callback);
+function publishedBefore(db, keyword, type, callback){
+    cursor(db, 1, keyword, type, callback);
 }
 
-function cursor(cible, keyword, type, callback){
-    mongoClient.connect(mongo.mongoPath, function(err, db) {
-        if (err) {callback(err);}
-        else {
-            var collection = db.collection('youtube');
-            collection.count(function(err, n){
-                if (n === 0){
-                    db.close();
-                    callback(null, null);
-                }
-                else{
-                    collection.count({keywords:keyword, type: type}, function(err, n1){
-                        if (n1 === 0){
-                            db.close();
-                            callback(null, null);
-                        }
-                        else{
-                            collection.find({keywords: keyword, type: type}).sort({'result.snippet.publishedAt': cible}).limit(1).toArray(function (err, res) {
-                                if (err) {callback(err);}
-                                else {
-                                    db.close();
-                                    var resp = res[0].result.snippet.publishedAt.toISOString();
-                                    console.log(resp);
-                                    callback(null, resp);
-                                }
-                            });
-
-                        }
-                    });
-
+function cursor(db, cible, keyword, type, callback){
+    db.collection('youtube').count({keywords:keyword, type: type}, function(err, n){
+        if (n === 0){callback(null, null);}
+        else{
+            db.collection('youtube').find({keywords: keyword, type: type}).sort({'result.snippet.publishedAt': cible}).limit(1).toArray(function (err, res) {
+                if (err) {callback(err);}
+                else {
+                    var resp = res[0].result.snippet.publishedAt.toISOString();
+                    console.log(resp);
+                    callback(null, resp);
                 }
             });
         }
@@ -124,4 +103,3 @@ function cursor(cible, keyword, type, callback){
 exports.videosSearch = videosSearch;
 exports.searchNew = searchNew;
 exports.searchOld = searchOld;
-
