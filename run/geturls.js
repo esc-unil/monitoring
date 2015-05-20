@@ -10,11 +10,11 @@ var monitoring = require('../monitoring.json');
 var google = require('./../integrate/google.js');
 var bing = require('./../integrate/bing.js');
 var yahoo = require('./../integrate/yahoo.js');
-/*var facebook = require('./../integrate/facebook.js');
-var twitter = require('./../integrate/twitter.js');
-var gplus = require('./../integrate/google_plus.js');
+//var facebook = require('./../integrate/facebook.js');
+//var twitter = require('./../integrate/twitter.js');
+//var gplus = require('./../integrate/google_plus.js');
 var youtube = require('./../integrate/youtube.js');
-var reddit = require('./../integrate/reddit.js'); */
+//var reddit = require('./../integrate/reddit.js');
 
 function run(database, todo){
     //lance le processus de recherche sur les différentes plateformes
