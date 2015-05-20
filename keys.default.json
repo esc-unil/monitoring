@@ -1,13 +1,4 @@
 {
-  "mongoDB": {
-    "domain":"",
-    "port": "",
-    "user":"",
-    "password":""
-  },
-
-  "DBrecherche" : "",
-
   "bingKey": "",
 
   "googleKey": "",
