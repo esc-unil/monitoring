@@ -9,5 +9,5 @@ function findURL(string){
 }
 
 function stdURL(url){
-
+//(str.indexOf(substr) > -1) true si subscrib dans str
 }
