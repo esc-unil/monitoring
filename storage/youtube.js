@@ -47,9 +47,9 @@ function videosSearch(db, keyword, num, opt_args, callback){
 function searchOld(db, keyword, num, opt_args, callback){
     if (typeof opt_args === 'function') {
         callback = opt_args;
-        opt_args = {type:'video'};
+        opt_args = {};
     }
-    cursor(db, 1, keyword, opt_args.type + 's', function(err, publishedBefore){
+    cursor(db, 1, keyword, 'videos', function(err, publishedBefore){
         if (err) {callback(err);}
         else {
             if (publishedBefore != null) {opt_args.publishedBefore = publishedBefore;}
@@ -61,9 +61,9 @@ function searchOld(db, keyword, num, opt_args, callback){
 function searchNew(db, keyword, num, opt_args, callback){
     if (typeof opt_args === 'function') {
         callback = opt_args;
-        opt_args = {type:'video'};
+        opt_args = {};
     }
-    cursor(db, -1, keyword, opt_args.type + 's', function(err, publishedAfter){
+    cursor(db, -1, keyword, 'videos', function(err, publishedAfter){
         if (err) {callback(err);}
         else {
             if (publishedAfter != null) {opt_args.publishedAfter = publishedAfter;}

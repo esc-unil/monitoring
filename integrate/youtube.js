@@ -5,8 +5,7 @@
  * remarque: pas d'information sur l'auteur avec l'API youtube
  */
 
-var mongo = require('./../mongodb.js');
-var mongoClient = require('mongodb').MongoClient;
+
 var async = require("async");
 
 function getURL(target, callback) {

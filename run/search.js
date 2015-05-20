@@ -5,47 +5,66 @@
 
 var async = require('async');
 var mongoClient = require('mongodb').MongoClient;
-var keys = require('../keys.json');
+var monitoring = require('../monitoring.json');
 
-if (keys.mongoDB.user != '' && keys.mongoDB.password != ''){var login = keys.mongoDB.user + ':' + keys.mongoDB.password;}
-else {var login = '';}
-var mongoPath = 'mongodb://' + login + keys.mongoDB.domain + ':' + keys.mongoDB.port + '/' + keys.DBrecherche;
-
-var google = require('./../storage/google.js');
-var bing = require('./../storage/bing.js');
-var yahoo = require('./../storage/yahoo.js');
-var facebook = require('./../storage/facebook.js');
-var twitter = require('./../storage/twitter.js');
-var gplus = require('./../storage/google_plus.js');
-var youtube = require('./../storage/youtube.js');
-var reddit = require('./../storage/reddit.js');
-
-
-
-mongoClient.connect(mongoPath, function(err, db) {
-    if (err){console.log(err);}
-    else {
-        /*
-        google.webSearch(db, 'steroid', 10, function (a, b) {db.close();console.log('done', b.ops[0].result.length);});
-        bing.webSearch(db, 'steroid', 10, function (a, b) {db.close();console.log('done', b.ops[0].result.length);});
-        yahoo.webSearch(db, 'steroid', 10, function (a, b) {db.close();console.log('done', b.ops[0].result.length);});
-        facebook.pagesSearch(db, 'steroid', 10, function (a, b) {db.close();console.log('done', b.ops[0].result.length);});
-        twitter.statusSearchNew(db, 'steroid', 200, function (a, b) {db.close(); console.log('done', b.ops.length);});
-        twitter.usersSearch(db, 'steroid', 10, function (a, b) {db.close();console.log('done', b.ops[0].result.length);});
-        gplus.statusSearchNew(db, 'steroid', 10, function (a, b) {db.close(); console.log('done', b.ops.length);});
-        gplus.usersSearch(db, 'steroid', 10, function (a, b) {db.close();console.log('done', b.ops[0].result.length);});
-        youtube.searchNew(db, 'steroid', 10, function (a, b) {db.close(); console.log('done', b.ops.length);});
-        reddit.searchNew(db, 'steroid', 10, null, function (a, b) {db.close(); console.log('done', b.ops.length);});
-        */
-
+function run(database, todo){
+    //lance le processus de recherche sur les différentes plateformes
+    var login = '';
+    if (monitoring.mongoDB.user != '' && monitoring.mongoDB.password != ''){
+        login = monitoring.mongoDB.user + ':' + monitoring.mongoDB.password;
     }
-});
-/*
-async.eachSeries(
-    ['steroid', 'danabol','winstrol'],
-    function(item, cb){
-        youtube.searchOld(db,item, 10, function (a, b) {console.log('done', item);cb();});
-    },
-    function(err){db.close(); console.log('done')}
-);
-    */
+    var mongoPath = 'mongodb://' + login + monitoring.mongoDB.domain + ':' + monitoring.mongoDB.port + '/' + database;
+    mongoClient.connect(mongoPath, function(err, db) {
+        if (err){console.log(err);}
+        else {
+            async.eachSeries(
+                todo,
+                function (item, callback){
+                    requests(db, item, callback);
+                },
+                function (){
+                    db.close();
+                    console.log('done');
+                }
+
+            )
+        }
+    });
+
+}
+
+function requests(db, item, callback){
+    //lance les requetes item.fct pour chaques mots-clefs contenus dans item.keywords
+    async.eachSeries(
+        item.keywords,
+        function (keyword, cb) {
+            try {
+                item.fct(db, keyword, item.num, item.opt_args, function (err, res) {
+                    if (err) {
+                        console.log(item.fct.name + '-' + item.keyword + ': erreur');
+                    }
+                    else {
+                        var nbResults = 0;
+                        if (res.ops.length === 1) {
+                            nbResults = res.ops[0].result.length;
+                        }
+                        else if (res.ops.length > 1) {
+                            nbResults = res.ops.length;
+                        }
+                        console.log(item.platform + ' > ' + item.fct.name + ' > ' + keyword + ': ' + nbResults);
+                    }
+                    cb();
+                });
+            } catch(err) {
+                console.log('ERREUR ' + item.platform + ' > ' + item.fct.name + ' > ' + keyword);
+                cb();
+            }
+        },
+        function (){
+            console.log(item.platform + ' > ' + item.fct.name + ': done');
+            console.log('------------------------------------------------------');
+            callback()
+        }
+    );
+}
+exports.run=run;

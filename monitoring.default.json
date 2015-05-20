@@ -1,0 +1,15 @@
+{
+  "mongoDB": {
+    "domain":"",
+    "port": "",
+    "user":"",
+    "password":""
+  },
+
+  "DBrecherche" : "",
+
+  "keywordsSEO": "",
+
+  "keywordsSN": ""
+
+}

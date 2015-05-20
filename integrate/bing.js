@@ -3,8 +3,7 @@
  * Created by tpineau
  */
 
-var mongo = require('./../mongodb.js');
-var mongoClient = require('mongodb').MongoClient;
+
 var async = require("async");
 
 function getURL(target, callback) {
