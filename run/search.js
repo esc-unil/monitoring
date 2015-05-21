@@ -8,7 +8,7 @@ var mongoClient = require('mongodb').MongoClient;
 var monitoring = require('../monitoring.json');
 
 function run(database, todo){
-    //lance le processus de recherche sur les différentes plateformes
+    //lance le processus de recherche sur les diffï¿½rentes plateformes
     var login = '';
     if (monitoring.mongoDB.user != '' && monitoring.mongoDB.password != ''){
         login = monitoring.mongoDB.user + ':' + monitoring.mongoDB.password;
@@ -26,11 +26,9 @@ function run(database, todo){
                     db.close();
                     console.log('done');
                 }
-
             )
         }
     });
-
 }
 
 function requests(db, item, callback){
@@ -67,4 +65,5 @@ function requests(db, item, callback){
         }
     );
 }
+
 exports.run=run;
