@@ -26,7 +26,7 @@ function run(database, todo){
     mongoClient.connect(mongoPath, function(err, db) {
         if (err){console.log(err);}
         else {
-            twitter.getURL(db, {}, function(a){db.close();console.log('done')});
+            yahoo.getURL(db, {}, function(a){db.close();console.log('done')});
 
 
             /*async.eachSeries(

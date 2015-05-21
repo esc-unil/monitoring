@@ -32,8 +32,7 @@ function getURL(db, target, callback) {
                                 }
                             };
                             db.collection('urls').insert(result, function (err) {
-                                if (err) {console.log(err);}
-                                rank++;
+                                if (err === null) {rank++;}
                                 cbItem();
                             })
                         },
