@@ -48,7 +48,8 @@ function getPost(db, col, target, callback) {
                                             author_id: obj.result.user.id_str,
                                             date: obj.result.created_date,
                                             lang : obj.result.lang
-                                        }
+                                        },
+                                        integrate: 0
                                     };
                                     db.collection(col).insert(result, function (err) {
                                         cbUrl();
@@ -100,7 +101,8 @@ function getUsers(db, col, target, callback) {
                                                 location: item.location,
                                                 timezone: item.time_zone,
                                                 lang : item.lang
-                                            }
+                                            },
+                                            integrate: 0
                                         };
                                         db.collection(col).insert(result, function (err) {
                                             cbUrl();

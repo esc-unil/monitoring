@@ -33,7 +33,8 @@ function getURL(db, col, target, callback) {
                                 type: obj.type,
                                 info: {
                                     ranking: rank
-                                }
+                                },
+                                integrate: 0
                             };
                             db.collection(col).insert(result, function (err) {
                                 if (err === null) {rank++;}

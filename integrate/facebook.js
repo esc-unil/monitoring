@@ -41,7 +41,8 @@ function getURL(db, col, target, callback) {
                                                 location: item.location,
                                                 phone: item.phone,
                                                 url: item.link
-                                            }
+                                            },
+                                            integrate: 0
                                         };
                                         db.collection(col).insert(result, function (err) {
                                             cbUrl();

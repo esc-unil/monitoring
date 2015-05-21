@@ -35,7 +35,8 @@ function getURL(db, col, target, callback) {
                                     info: {
                                         id: obj.result.id.videoId,
                                         date: obj.result.snippet.publishedAt
-                                    }
+                                    },
+                                    integrate: 0
                                 };
                                 db.collection(col).insert(result, function (err) {
                                     if (err) {console.log(err);}

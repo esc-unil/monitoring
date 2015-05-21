@@ -37,7 +37,8 @@ function getURL(db, col, target, callback) {
                                         date: obj.result.created,
                                         subreddit:obj.result.subreddit,
                                         url: obj.result.url
-                                    }
+                                    },
+                                    integrate: 0
                                 };
                                 db.collection(col).insert(result, function (err) {
                                     cbUrl();

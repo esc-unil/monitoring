@@ -53,7 +53,8 @@ function getPost(db, col, target, callback) {
                                         author_id: obj.result.actor.id,
                                         date: obj.result.published,
                                         url : obj.result.url
-                                    }
+                                    },
+                                    integrate: 0
                                 };
                                 if (url.indexOf('https://plus.google.com/') === -1) { // urls internes (non voulues)
                                     db.collection(col).insert(result, function (err) {
@@ -104,7 +105,8 @@ function getUsers(db, col, target, callback) {
                                                 author: item.displayName,
                                                 author_id: item.id,
                                                 url: item.url
-                                            }
+                                            },
+                                            integrate: 0
                                         };
                                         db.collection(col).insert(result, function (err) {
                                             cbUrl();
