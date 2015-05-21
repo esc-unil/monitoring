@@ -38,7 +38,7 @@ function singleArray(array){ //supprime les doublons dans la liste
 }
 
 function findURL(string){ //cherche tout les URL d'un texte
-    var reg = /https?:\/\/[^<>\s^!{}\[\]'"~\/\.,;]+\.[^<>\s^!{}\[\]'"~,;]+/ig;
+    var reg = /https?:\/\/[^<>\s^!{}\[\]'"~\/\.,;]+\.[^<>\s^!{}\[\]'"~,;]+[^<>\s^!{}\[\]'"~,;\.\?:&)(*]/ig;
     return string.match(reg);
 }
 

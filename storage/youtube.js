@@ -33,6 +33,7 @@ function videosSearch(db, keyword, num, opt_args, callback){
         else {
             var results = [];
             for (var i = 0; i < response.length; i++) {
+                response[i]._id = response[i].keywords + ';' + response[i].result.id.videoId;
                 response[i].integrate = 0;
                 results.push(response[i]);
             }

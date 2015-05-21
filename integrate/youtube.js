@@ -15,7 +15,7 @@ function getURL(db, target, callback) {
         else {
             async.eachLimit(
                 res,
-                20,
+                200,
                 function (obj, cbObj) {
                     /*db.collection('youtube').update({_id: mongo.ObjectId(obj._id)}, {$set: {integrate: 1}}, function (err) {
                         if (err) console.log(obj._id, err);
@@ -28,6 +28,7 @@ function getURL(db, target, callback) {
                             urls,
                             function(url, cbUrl){
                                 var result = {
+                                    _id: 'youtube;' + obj._id + ';' + url,
                                     url: url,
                                     keywords: obj.keywords,
                                     date: obj.date,
