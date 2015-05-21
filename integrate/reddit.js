@@ -7,7 +7,7 @@
 var async = require("async");
 var tools = require('./tools.js');
 
-function getURL(db, target, callback) {
+function getURL(db, col, target, callback) {
     db.collection('reddit').find(target).toArray(function (err, res) {
         if (err) {callback(err);}
         else {
@@ -39,8 +39,7 @@ function getURL(db, target, callback) {
                                         url: obj.result.url
                                     }
                                 };
-                                db.collection('urls').insert(result, function (err) {
-                                    if (err) {console.log(err);}
+                                db.collection(col).insert(result, function (err) {
                                     cbUrl();
                                 })
                             },

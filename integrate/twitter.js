@@ -7,15 +7,15 @@
 var async = require("async");
 var tools = require('./tools.js');
 
-function getURL(db, target, callback) {
+function getURL(db, col, target, callback) {
     async.eachSeries(
         [getPost, getUsers],
-        function (fct, cb){fct(db, target, cb);},
+        function (fct, cb){fct(db, col, target, cb);},
         function(err){callback(err);}
     );
 }
 
-function getPost(db, target, callback) {
+function getPost(db, col, target, callback) {
     target.type = 'post';
     db.collection('twitter').find(target).toArray(function (err, res) {
         if (err) {callback(err);}
@@ -50,7 +50,7 @@ function getPost(db, target, callback) {
                                             lang : obj.result.lang
                                         }
                                     };
-                                    db.collection('urls').insert(result, function (err) {
+                                    db.collection(col).insert(result, function (err) {
                                         cbUrl();
                                     })
                                 },
@@ -65,7 +65,7 @@ function getPost(db, target, callback) {
     });
 }
 
-function getUsers(db, target, callback) {
+function getUsers(db, col, target, callback) {
     target.type = 'users';
     db.collection('twitter').find(target).toArray(function (err, res) {
         if (err) {callback(err);}
@@ -87,7 +87,7 @@ function getUsers(db, target, callback) {
                                     urls,
                                     function (url, cbUrl) {
                                         var result = {
-                                            _id: 'twitter;' + obj._id + ';' + url,
+                                            _id: 'twitter;' + obj.type + ';' + obj.keywords + ';' + item.id_str + ';' + url,
                                             url: url,
                                             keywords: obj.keywords,
                                             date: obj.date,
@@ -102,7 +102,7 @@ function getUsers(db, target, callback) {
                                                 lang : item.lang
                                             }
                                         };
-                                        db.collection('urls').insert(result, function (err) {
+                                        db.collection(col).insert(result, function (err) {
                                             cbUrl();
                                         })
                                     },

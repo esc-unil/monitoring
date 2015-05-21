@@ -5,7 +5,7 @@
 
 var async = require("async");
 
-function getURL(db, target, callback) {
+function getURL(db, col, target, callback) {
     db.collection('google').find(target).toArray(function (err, res) {
         if (err) {callback(err);}
         else {
@@ -31,7 +31,7 @@ function getURL(db, target, callback) {
                                     ranking: rank
                                 }
                             };
-                            db.collection('urls').insert(result, function (err) {
+                            db.collection(col).insert(result, function (err) {
                                 if (err === null) {rank++;}
                                 cbItem();
                             })

@@ -7,8 +7,7 @@
 var async = require("async");
 var tools = require('./tools.js');
 
-function getURL(db, target, callback) {
-    target.type = 'users';
+function getURL(db, col, target, callback) {
     db.collection('facebook').find(target).toArray(function (err, res) {
         if (err) {callback(err);}
         else {
@@ -23,28 +22,28 @@ function getURL(db, target, callback) {
                         obj.result,
                         function (item, cbItem) {
                             var description = item.description;
-                            var website = item.url;
-                            tools.findAllUrls([website, description], function (err, urls) {
+                            var about = item.about;
+                            var website = item.website;
+                            tools.findAllUrls([website, about, description], function (err, urls) {
                                 async.each(
                                     urls,
                                     function (url, cbUrl) {
                                         var result = {
-                                            _id: 'facebook;' + obj._id + ';' + url,
+                                            _id: 'facebook;' + obj.type + ';' + obj.keywords + ';' + item.id + ';' + url,
                                             url: url,
                                             keywords: obj.keywords,
                                             date: obj.date,
                                             platform: 'facebook',
                                             type: obj.type,
                                             info: {
-                                                author: item.screen_name,
-                                                author_id: item.id_str,
-                                                date: new Date(item.created_at),
+                                                id: item.id,
+                                                name: item.name,
                                                 location: item.location,
-                                                timezone: item.time_zone,
-                                                lang : item.lang
+                                                phone: item.phone,
+                                                url: item.link
                                             }
                                         };
-                                        db.collection('urls').insert(result, function (err) {
+                                        db.collection(col).insert(result, function (err) {
                                             cbUrl();
                                         })
                                     },
