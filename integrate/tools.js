@@ -11,6 +11,7 @@ function findAllUrls(list, callback){
     async.concat(
         list,
         function(item, cbItem) {
+            if (item === null || item === undefined){item = '';}
             cbItem(null, findURL(item));
         },
         function(err, res){

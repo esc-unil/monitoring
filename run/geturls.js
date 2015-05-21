@@ -14,7 +14,7 @@ var yahoo = require('./../integrate/yahoo.js');
 //var twitter = require('./../integrate/twitter.js');
 //var gplus = require('./../integrate/google_plus.js');
 var youtube = require('./../integrate/youtube.js');
-//var reddit = require('./../integrate/reddit.js');
+var reddit = require('./../integrate/reddit.js');
 
 function run(database, todo){
     //lance le processus de recherche sur les diff�rentes plateformes
@@ -26,7 +26,7 @@ function run(database, todo){
     mongoClient.connect(mongoPath, function(err, db) {
         if (err){console.log(err);}
         else {
-            youtube.getURL(db, {integrate:0}, function(a,b){db.close();console.log('done')});
+            reddit.getURL(db, {integrate:0}, function(a,b){db.close();console.log('done')});
 
 
             /*async.eachSeries(
@@ -44,7 +44,7 @@ function run(database, todo){
     });
 }
 
-run(monitoring.DBrecherche, '');
+run('test', '');
 
 /*
  google.getURL(db, {integrate:0}, function(a,b){db.close();});

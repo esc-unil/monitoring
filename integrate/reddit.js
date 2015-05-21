@@ -18,9 +18,9 @@ function getURL(db, target, callback) {
                     db.collection('reddit').update({_id: obj._id}, {$set: {integrate: 1}}, function (err) {
                         if (err) console.log(obj._id, err);
                     });
-                    var title = obj.result.snippet.title;
-                    var description = obj.result.snippet.description; //
-                    tools.findAllUrls([title, description], function (err, urls){
+                    var title = obj.result.title;
+                    var text = obj.result.selftext;
+                    tools.findAllUrls([title, text], function (err, urls){
                         async.each(
                             urls,
                             function(url, cbUrl){
@@ -32,8 +32,11 @@ function getURL(db, target, callback) {
                                     platform: 'reddit',
                                     type: obj.type,
                                     info: {
-                                        id: obj.result.id.videoId,
-                                        date: obj.result.snippet.publishedAt
+                                        id: obj.result.name,
+                                        author: obj.result.author,
+                                        date: obj.result.created,
+                                        subreddit:obj.result.subreddit,
+                                        url: obj.result.url
                                     }
                                 };
                                 db.collection('urls').insert(result, function (err) {
