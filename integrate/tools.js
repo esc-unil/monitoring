@@ -45,15 +45,25 @@ function findURL(string){ //cherche tout les URL d'un texte
 
 function expandURL(url, callback){ //recupere les URL non raccourcis
     var reg = /https?:\/\/([^\/\s\.]+\.[^\/\s\.]+)\/[a-zA-Z0-9]+/i;
-    if (reg.exec(url) === null){callback(null, url);}
+    if (reg.exec(url) === null){callback(null, caseURL(url));}
     else {
         request( { method: "HEAD", url: url, followAllRedirects: true },
             function (err, res) {
-                if (err) {callback(null, url);}
+                if (err) {callback(null, caseURL(url));}
                 else {callback(null, res.request.href);}
             }
         );
     }
+}
+
+function caseURL(url){ //met le http(s)://hostname en minuscule
+    var reg_h = /https?:\/\/[^\/]+/i;
+    var reg_p = /https?:\/\/[^\/]+\/(\S*)/i;
+    var url_h = reg_h.exec(url)[0].toLowerCase();
+    var url_p = reg_p.exec(url);
+    if (url_p != null) {url_p = url_p[1];}
+    else {url_p = '';}
+    return url_h + '/' + url_p;
 }
 
 exports.findAllUrls = findAllUrls;
