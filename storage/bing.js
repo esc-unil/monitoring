@@ -38,6 +38,7 @@ function search(fct, db, keyword, num, opt_args, callback){
     fct(keyword, num, opt_args, function(err, response){
         if (err) callback(err);
         else {
+            response._id = response.type + ';' + response.keywords + ';' + response.date.toISOString();
             response.integrate = 0;
             db.collection('bing').insert(response, callback);
         }
