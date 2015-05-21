@@ -19,7 +19,7 @@ function getURL(db, target, callback) {
                         if (err) console.log(obj._id, err);
                     });
                     var title = obj.result.snippet.title;
-                    var description = obj.result.snippet.description;
+                    var description = obj.result.snippet.description; //
                     tools.findAllUrls([title, description], function (err, urls){
                         async.each(
                             urls,
