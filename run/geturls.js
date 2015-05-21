@@ -26,7 +26,8 @@ function run(database, todo){
     mongoClient.connect(mongoPath, function(err, db) {
         if (err){console.log(err);}
         else {
-            youtube.getURL(db, {integrate:0}, function(a,b){db.close();console.log('done')});
+            yahoo.getURL(db, {integrate:0}, function(a,b){db.close();console.log('done')});
+
 
             /*async.eachSeries(
                 todo,
@@ -49,4 +50,5 @@ run(monitoring.DBrecherche, '');
  google.getURL(db, {integrate:0}, function(a,b){db.close();});
  bing.getURL(db, {integrate:0}, function(a,b){db.close();});
  yahoo.getURL(db, {integrate:0}, function(a,b){db.close();});
+ youtube.getURL(db, {integrate:0}, function(a,b){db.close();console.log('done')});
  */

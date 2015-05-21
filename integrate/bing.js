@@ -3,7 +3,6 @@
  * Created by tpineau
  */
 
-var mongodb = require('mongodb');
 var async = require("async");
 
 function getURL(db, target, callback) {
@@ -16,7 +15,7 @@ function getURL(db, target, callback) {
                 res,
                 20,
                 function (obj, cbObj) {
-                    db.collection('bing').update({_id: mongodb.ObjectId(obj._id)}, {$set: {integrate: 1}}, function (err) {
+                    db.collection('bing').update({_id: obj._id}, {$set: {integrate: 1}}, function (err) {
                         if (err) console.log(obj._id, err);
                     });
                     var rank = 1;
@@ -26,6 +25,7 @@ function getURL(db, target, callback) {
                             if (obj.type === 'web') {var url = item.Url;}
                             else if (obj.type === 'images' || obj.type === 'videos') {var url = item.MediaUrl;}
                             var result = {
+                                _id: 'bing;' + obj._id + ';' + url,
                                 url: url,
                                 keywords: obj.keywords,
                                 date: obj.date,
