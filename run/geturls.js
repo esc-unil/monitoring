@@ -11,7 +11,7 @@ var google = require('./../integrate/google.js');
 var bing = require('./../integrate/bing.js');
 var yahoo = require('./../integrate/yahoo.js');
 //var facebook = require('./../integrate/facebook.js');
-//var twitter = require('./../integrate/twitter.js');
+var twitter = require('./../integrate/twitter.js');
 //var gplus = require('./../integrate/google_plus.js');
 var youtube = require('./../integrate/youtube.js');
 var reddit = require('./../integrate/reddit.js');
@@ -26,7 +26,7 @@ function run(database, todo){
     mongoClient.connect(mongoPath, function(err, db) {
         if (err){console.log(err);}
         else {
-            reddit.getURL(db, {integrate:0}, function(a,b){db.close();console.log('done')});
+            twitter.getURL(db, {}, function(a){db.close();console.log('done')});
 
 
             /*async.eachSeries(
@@ -46,9 +46,4 @@ function run(database, todo){
 
 run('test', '');
 
-/*
- google.getURL(db, {integrate:0}, function(a,b){db.close();});
- bing.getURL(db, {integrate:0}, function(a,b){db.close();});
- yahoo.getURL(db, {integrate:0}, function(a,b){db.close();});
- youtube.getURL(db, {integrate:0}, function(a,b){db.close();console.log('done')});
- */
+
