@@ -46,7 +46,7 @@ function getPost(db, col, target, callback) {
                                     keywords: obj.keywords,
                                     date: obj.date,
                                     platform: 'google_plus',
-                                    type: obj.type,
+                                    type: 'post',
                                     info: {
                                         id: obj.result.id,
                                         author: obj.result.actor.displayName,
@@ -100,7 +100,7 @@ function getUsers(db, col, target, callback) {
                                             keywords: obj.keywords,
                                             date: obj.date,
                                             platform: 'google_plus',
-                                            type: obj.type,
+                                            type: 'user',
                                             info: {
                                                 author: item.displayName,
                                                 author_id: item.id,

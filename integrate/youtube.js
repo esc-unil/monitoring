@@ -31,7 +31,7 @@ function getURL(db, col, target, callback) {
                                     keywords: obj.keywords,
                                     date: obj.date,
                                     platform: 'youtube',
-                                    type: obj.type,
+                                    type: 'video',
                                     info: {
                                         id: obj.result.id.videoId,
                                         date: obj.result.snippet.publishedAt

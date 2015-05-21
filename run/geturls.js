@@ -16,7 +16,7 @@ var gplus = require('./../integrate/google_plus.js');
 var youtube = require('./../integrate/youtube.js');
 var reddit = require('./../integrate/reddit.js');
 
-function run(database, col, target, todo){
+function run(database, col, target, platforms){
     //lance le processus de recherche d'urls dans les differentes collections et les integre dans la collection col
     var login = '';
     if (monitoring.mongoDB.user != '' && monitoring.mongoDB.password != ''){
@@ -28,10 +28,11 @@ function run(database, col, target, todo){
         else {
             var i = 1;
             async.eachSeries(
-                todo,
+                platforms,
                 function (platform, cb){
                     platform.getURL(db, col, target, function(err){
-                        console.log('Platform ' + i.toString() + '/' + todo.length.toString());
+                        if (err) {console.log(err);}
+                        console.log('Platform ' + i.toString() + '/' + platforms.length.toString());
                         i++;
                         cb();
                     });
@@ -45,17 +46,7 @@ function run(database, col, target, todo){
     });
 }
 
-var platforms = [
-    google,
-    bing,
-    yahoo,
-    facebook,
-    twitter,
-    gplus,
-    youtube,
-    reddit
-];
+var platforms = [google, bing, yahoo, facebook, twitter, gplus, youtube, reddit];
 
-run(monitoring.DBrecherche, 'ulrs', {integrate:0}, platforms);
-
+run(monitoring.DBrecherche, 'ulrs', {integrate:1}, platforms);
 

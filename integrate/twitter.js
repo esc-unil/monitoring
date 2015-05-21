@@ -41,7 +41,7 @@ function getPost(db, col, target, callback) {
                                         keywords: obj.keywords,
                                         date: obj.date,
                                         platform: 'twitter',
-                                        type: obj.type,
+                                        type: 'post',
                                         info: {
                                             id: obj.result.id_str,
                                             author: obj.result.user.screen_name,
@@ -93,7 +93,7 @@ function getUsers(db, col, target, callback) {
                                             keywords: obj.keywords,
                                             date: obj.date,
                                             platform: 'twitter',
-                                            type: obj.type,
+                                            type: 'user',
                                             info: {
                                                 author: item.screen_name,
                                                 author_id: item.id_str,

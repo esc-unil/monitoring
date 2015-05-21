@@ -28,13 +28,14 @@ function getURL(db, col, target, callback) {
                                 async.each(
                                     urls,
                                     function (url, cbUrl) {
+                                        var type = 'page'; if (obj.type === 'places'){type = 'place';}
                                         var result = {
                                             _id: 'facebook;' + obj.type + ';' + obj.keywords + ';' + item.id + ';' + url,
                                             url: url,
                                             keywords: obj.keywords,
                                             date: obj.date,
                                             platform: 'facebook',
-                                            type: obj.type,
+                                            type: type,
                                             info: {
                                                 id: item.id,
                                                 name: item.name,
