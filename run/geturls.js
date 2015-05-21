@@ -12,7 +12,7 @@ var bing = require('./../integrate/bing.js');
 var yahoo = require('./../integrate/yahoo.js');
 var facebook = require('./../integrate/facebook.js');
 var twitter = require('./../integrate/twitter.js');
-//var gplus = require('./../integrate/google_plus.js');
+var gplus = require('./../integrate/google_plus.js');
 var youtube = require('./../integrate/youtube.js');
 var reddit = require('./../integrate/reddit.js');
 
@@ -26,7 +26,7 @@ function run(database, todo){
     mongoClient.connect(mongoPath, function(err, db) {
         if (err){console.log(err);}
         else {
-            twitter.getURL(db, 'urls', {}, function(a){db.close();console.log('done')});
+            gplus.getURL(db, 'urls', {}, function(a){db.close();console.log('done')});
 
 
             /*async.eachSeries(
