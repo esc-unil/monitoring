@@ -2,21 +2,20 @@
 /**
  * Created by tpineau
  *
- * remarque: pas d'information sur l'auteur avec l'API youtube
  */
 
 var async = require("async");
 var tools = require('./tools.js');
 
 function getURL(db, target, callback) {
-    db.collection('youtube').find(target).toArray(function (err, res) {
+    db.collection('reddit').find(target).toArray(function (err, res) {
         if (err) {callback(err);}
         else {
             async.eachLimit(
                 res,
                 200,
                 function (obj, cbObj) {
-                    db.collection('youtube').update({_id: obj._id}, {$set: {integrate: 1}}, function (err) {
+                    db.collection('reddit').update({_id: obj._id}, {$set: {integrate: 1}}, function (err) {
                         if (err) console.log(obj._id, err);
                     });
                     var title = obj.result.snippet.title;
@@ -26,11 +25,11 @@ function getURL(db, target, callback) {
                             urls,
                             function(url, cbUrl){
                                 var result = {
-                                    _id: 'youtube;' + obj._id + ';' + url,
+                                    _id: 'reddit;' + obj._id + ';' + url,
                                     url: url,
                                     keywords: obj.keywords,
                                     date: obj.date,
-                                    platform: 'youtube',
+                                    platform: 'reddit',
                                     type: obj.type,
                                     info: {
                                         id: obj.result.id.videoId,

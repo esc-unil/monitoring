@@ -26,7 +26,7 @@ function run(database, todo){
     mongoClient.connect(mongoPath, function(err, db) {
         if (err){console.log(err);}
         else {
-            yahoo.getURL(db, {integrate:0}, function(a,b){db.close();console.log('done')});
+            youtube.getURL(db, {integrate:0}, function(a,b){db.close();console.log('done')});
 
 
             /*async.eachSeries(
