@@ -7,6 +7,7 @@
 
 
 var async = require("async");
+var tools = require('./tools.js');
 
 function getURL(db, target, callback) {
     db.collection('youtube').find(target).toArray(function (err, res) {
@@ -22,21 +23,29 @@ function getURL(db, target, callback) {
                     */
                     var title = obj.result.snippet.title;
                     var description = obj.result.snippet.description;
-                    var result = {
-                        url: obj.url,
-                        keywords: obj.keywords,
-                        date: obj.date,
-                        platform: 'youtube',
-                        type: obj.type,
-                        info: {
-                            id: obj.result.id.videoId,
-                            date: obj.result.snippet.publishedAt,
-                        }
-                    };
-                    db.collection('test').insert(result, function (err) {
-                        if (err) {console.log(err);}
-                        cbObj();
-                    })
+                    tools.findAllUrls([title, description], function (err, urls){
+                        async.each(
+                            urls,
+                            function(url, cbUrl){
+                                var result = {
+                                    url: url,
+                                    keywords: obj.keywords,
+                                    date: obj.date,
+                                    platform: 'youtube',
+                                    type: obj.type,
+                                    info: {
+                                        id: obj.result.id.videoId,
+                                        date: obj.result.snippet.publishedAt
+                                    }
+                                };
+                                db.collection('test').insert(result, function (err) {
+                                    if (err) {console.log(err);}
+                                    cbUrl();
+                                })
+                            },
+                            function(err){cbObj();}
+                        );
+                    });
                 },
                 function (err) {callback(err);}
             );

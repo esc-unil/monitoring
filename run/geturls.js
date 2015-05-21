@@ -17,7 +17,7 @@ var youtube = require('./../integrate/youtube.js');
 //var reddit = require('./../integrate/reddit.js');
 
 function run(database, todo){
-    //lance le processus de recherche sur les différentes plateformes
+    //lance le processus de recherche sur les diffï¿½rentes plateformes
     var login = '';
     if (monitoring.mongoDB.user != '' && monitoring.mongoDB.password != ''){
         login = monitoring.mongoDB.user + ':' + monitoring.mongoDB.password;
@@ -26,7 +26,7 @@ function run(database, todo){
     mongoClient.connect(mongoPath, function(err, db) {
         if (err){console.log(err);}
         else {
-
+            youtube.getURL(db, {integrate:0}, function(a,b){db.close();console.log('done')});
 
             /*async.eachSeries(
                 todo,
