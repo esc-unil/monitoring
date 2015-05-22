@@ -15,7 +15,7 @@ function getURL(db, col, target, callback) {
         else {
             async.eachLimit(
                 res,
-                200,
+                50,
                 function (obj, cbObj) {
                     db.collection('youtube').update({_id: obj._id}, {$set: {integrate: 1}}, function (err) {
                         if (err) console.log(obj._id, err);

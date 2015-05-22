@@ -12,7 +12,7 @@ function getURL(db, col, target, callback) {
         else {
             async.eachLimit(
                 res,
-                20,
+                50,
                 function (obj, cbObj) {
                     db.collection('google').update({_id: obj._id}, {$set: {integrate: 1}}, function (err) {
                         if (err) console.log(obj._id, err);

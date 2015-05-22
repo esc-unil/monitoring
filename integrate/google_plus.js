@@ -23,7 +23,7 @@ function getPost(db, col, target, callback) {
         else {
             async.eachLimit(
                 res,
-                100,
+                50,
                 function (obj, cbObj) {
                     db.collection('google_plus').update({_id: obj._id}, {$set: {integrate: 1}}, function (err) {
                         if (err) console.log(obj._id, err);
@@ -81,7 +81,7 @@ function getUsers(db, col, target, callback) {
         else {
             async.eachLimit(
                 res,
-                10,
+                20,
                 function (obj, cbObj) {
                     db.collection('google_plus').update({_id: obj._id}, {$set: {integrate: 1}}, function (err) {
                         if (err) console.log(obj._id, err);
