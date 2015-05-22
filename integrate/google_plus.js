@@ -6,6 +6,7 @@
 
 var async = require("async");
 var tools = require('./tools.js');
+var urlparse = require('url').parse;
 
 function getURL(db, col, target, callback) {
     async.eachSeries(
@@ -43,6 +44,7 @@ function getPost(db, col, target, callback) {
                                 var result = {
                                     _id: 'google_plus;' + obj._id + ';' + url,
                                     url: url,
+                                    hostname: urlparse(url).hostname,
                                     keywords: obj.keywords,
                                     date: obj.date,
                                     platform: 'google_plus',
@@ -97,6 +99,7 @@ function getUsers(db, col, target, callback) {
                                         var result = {
                                             _id: 'google_plus;' + obj.type + ';' + obj.keywords + ';' + item.id + ';' + url,
                                             url: url,
+                                            hostname: urlparse(url).hostname,
                                             keywords: obj.keywords,
                                             date: obj.date,
                                             platform: 'google_plus',

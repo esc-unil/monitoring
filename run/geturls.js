@@ -48,5 +48,5 @@ function run(database, col, target, platforms){
 
 var platforms = [google, bing, yahoo, facebook, twitter, gplus, youtube, reddit];
 
-run(monitoring.DBrecherche, 'ulrs', {integrate:1}, platforms);
+run(monitoring.DBrecherche, 'urls', {integrate:1}, platforms);
 

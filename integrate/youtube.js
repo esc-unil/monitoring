@@ -6,6 +6,7 @@
  */
 
 var async = require("async");
+var urlparse = require('url').parse;
 var tools = require('./tools.js');
 
 function getURL(db, col, target, callback) {
@@ -28,6 +29,7 @@ function getURL(db, col, target, callback) {
                                 var result = {
                                     _id: 'youtube;' + obj._id + ';' + url,
                                     url: url,
+                                    hostname: urlparse(url).hostname,
                                     keywords: obj.keywords,
                                     date: obj.date,
                                     platform: 'youtube',

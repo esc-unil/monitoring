@@ -4,6 +4,7 @@
  */
 
 var async = require("async");
+var urlparse = require('url').parse;
 
 function getURL(db, col, target, callback) {
     db.collection('google').find(target).toArray(function (err, res) {
@@ -20,9 +21,11 @@ function getURL(db, col, target, callback) {
                     async.eachSeries(
                         obj.result,
                         function (item, cbItem) {
+                            var url = item.link;
                             var result = {
                                 _id: 'google;' + obj._id + ';' + item.link,
-                                url: item.link,
+                                url: url,
+                                hostname: urlparse(url).hostname,
                                 keywords: obj.keywords,
                                 date: obj.date,
                                 platform: 'google',

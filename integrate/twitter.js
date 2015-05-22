@@ -5,6 +5,7 @@
  */
 
 var async = require("async");
+var urlparse = require('url').parse;
 var tools = require('./tools.js');
 
 function getURL(db, col, target, callback) {
@@ -38,6 +39,7 @@ function getPost(db, col, target, callback) {
                                     var result = {
                                         _id: 'twitter;' + obj._id + ';' + url,
                                         url: url,
+                                        hostname: urlparse(url).hostname,
                                         keywords: obj.keywords,
                                         date: obj.date,
                                         platform: 'twitter',
@@ -90,6 +92,7 @@ function getUsers(db, col, target, callback) {
                                         var result = {
                                             _id: 'twitter;' + obj.type + ';' + obj.keywords + ';' + item.id_str + ';' + url,
                                             url: url,
+                                            hostname: urlparse(url).hostname,
                                             keywords: obj.keywords,
                                             date: obj.date,
                                             platform: 'twitter',

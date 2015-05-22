@@ -5,6 +5,7 @@
  */
 
 var async = require("async");
+var urlparse = require('url').parse;
 var tools = require('./tools.js');
 
 function getURL(db, col, target, callback) {
@@ -32,6 +33,7 @@ function getURL(db, col, target, callback) {
                                         var result = {
                                             _id: 'facebook;' + obj.type + ';' + obj.keywords + ';' + item.id + ';' + url,
                                             url: url,
+                                            hostname: urlparse(url).hostname,
                                             keywords: obj.keywords,
                                             date: obj.date,
                                             platform: 'facebook',

@@ -5,6 +5,7 @@
 
 var request = require('request');
 var async = require('async');
+var urlparse = require('url').parse;
 
 function findAllUrls(list, callback){
 //recherche tout les URL d'une liste de textes, les URL sont non raccourci et sans doublons
@@ -45,25 +46,15 @@ function findURL(string){ //cherche tout les URL d'un texte
 
 function expandURL(url, callback){ //recupere les URL non raccourcis
     var reg = /https?:\/\/([^\/\s\.]+\.[^\/\s\.]+)\/[a-zA-Z0-9]+/i;
-    if (reg.exec(url) === null){callback(null, caseURL(url));}
+    if (reg.exec(url) === null){callback(null, urlparse(url).href);}
     else {
         request( { method: "HEAD", url: url, followAllRedirects: true },
             function (err, res) {
-                if (err) {callback(null, caseURL(url));}
+                if (err) {callback(null, urlparse(url).href);}
                 else {callback(null, res.request.href);}
             }
         );
     }
-}
-
-function caseURL(url){ //met le http(s)://hostname en minuscule
-    var reg_h = /https?:\/\/[^\/]+/i;
-    var reg_p = /https?:\/\/[^\/]+\/(\S*)/i;
-    var url_h = reg_h.exec(url)[0].toLowerCase();
-    var url_p = reg_p.exec(url);
-    if (url_p != null) {url_p = url_p[1];}
-    else {url_p = '';}
-    return url_h + '/' + url_p;
 }
 
 exports.findAllUrls = findAllUrls;
