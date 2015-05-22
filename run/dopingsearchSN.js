@@ -2,7 +2,7 @@
 /**
  * Created by tpineau
  *
- * Lancer 1 fois par jour
+ * Lancer 6 fois par jour
  */
 
 var search = require('./search.js');
