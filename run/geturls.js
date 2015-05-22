@@ -46,7 +46,8 @@ function run(database, col, target, platforms){
     });
 }
 
-var platforms = [google, bing, yahoo, facebook, twitter, gplus, youtube, reddit];
+var platforms = [youtube, reddit, google, bing, yahoo, facebook, twitter, gplus];
 
-run(monitoring.DBrecherche, 'urls', {integrate:1}, platforms);
+run(monitoring.DBrecherche, 'urls', {integrate:0}, platforms);
+
 
