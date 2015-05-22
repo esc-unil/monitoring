@@ -5,4 +5,5 @@ node_modules
 keys.json
 monitoring.json
 run/dopingsearch.js
+run/dopingsearchSN.js
 run/test.js
