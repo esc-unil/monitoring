@@ -54,9 +54,9 @@ function expandURL(url, callback) {
             method: "HEAD",
             url: url,
             followAllRedirects: true,
-            timeout: 10000,
+            timeout: 50000,
             rejectUnauthorized: false,
-            requestCert: true, //agent: false
+            requestCert: true,
             pool: pool
         };
         request(options, function (err, res) {
