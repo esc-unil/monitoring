@@ -46,9 +46,6 @@ function findURL(string){ //cherche tout les URL d'un texte
 }
 
 function expandURL(url, callback) {
-    var reg = /https?:\/\/([^\/\s\.]+\.[^\/\s\.]+)\/[a-zA-Z0-9]+/i;
-    if (reg.exec(url) === null){callback(null, urlparse(url).href);}
-    else {
         var pool = new http.Agent({'maxSockets': Infinity});
         var options = {
             method: "HEAD",
@@ -69,7 +66,6 @@ function expandURL(url, callback) {
                 callback(null, res.request.href);
             }
         }).setMaxListeners(0);
-    }
 }
 
 exports.findAllUrls = findAllUrls;
