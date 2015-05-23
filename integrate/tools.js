@@ -4,6 +4,7 @@
  */
 
 var request = require('request');
+var http = require('http');
 var async = require('async');
 var urlparse = require('url').parse;
 
@@ -44,16 +45,30 @@ function findURL(string){ //cherche tout les URL d'un texte
     return string.match(reg);
 }
 
-function expandURL(url, callback){ //recupere les URL non raccourcis
+function expandURL(url, callback) {
     var reg = /https?:\/\/([^\/\s\.]+\.[^\/\s\.]+)\/[a-zA-Z0-9]+/i;
     if (reg.exec(url) === null){callback(null, urlparse(url).href);}
     else {
-        request( { method: "HEAD", url: url, followAllRedirects: true },
-            function (err, res) {
-                if (err) {callback(null, urlparse(url).href);}
-                else {callback(null, res.request.href);}
+        var pool = new http.Agent({'maxSockets': Infinity});
+        var options = {
+            method: "HEAD",
+            url: url,
+            followAllRedirects: true,
+            timeout: 10000,
+            rejectUnauthorized: false,
+            requestCert: true, //agent: false
+            pool: pool
+        };
+        request(options, function (err, res) {
+            if (err) {
+                if (err.code === 'ENOTFOUND' && (err.hostname != undefined || err.hostname != '')) {
+                    callback(err, 'http://' + err.hostname + '/');
+                }
+                else {callback(err, urlparse(url).href);}
+            } else {
+                callback(null, res.request.href);
             }
-        );
+        }).setMaxListeners(0);
     }
 }
 
