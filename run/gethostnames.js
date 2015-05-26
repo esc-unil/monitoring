@@ -37,7 +37,14 @@ function run(database, urlsCol, hostnamesCol, target){
                                 }
                             });
                         },
-                        function() {db.close(); console.log('done');
+                        function() {
+                            db.collection(urlsCol).count(target, function (err, res) {
+                                if (err || res === 0){
+                                    db.close();
+                                    console.log('done');
+                                }
+                                else {run(database, urlsCol, hostnamesCol, target);}
+                            });
                         }
                     );
                 }
