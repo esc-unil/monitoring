@@ -17,13 +17,13 @@ function getURL(db, col, target, callback) {
                     db.collection('google').update({_id: obj._id}, {$set: {integrate: 1}}, function (err) {
                         if (err) console.log(obj._id, err);
                     });
-                    var rank = 1;
+                    //var rank = 1;
                     async.eachSeries(
                         obj.result,
                         function (item, cbItem) {
                             var url = item.link;
                             var result = {
-                                _id: 'google;' + obj._id + ';' + item.link,
+                                _id: 'google;' + obj.type + ';' + obj.keywords + ';' + url,
                                 url: url,
                                 hostname: urlparse(url).hostname,
                                 keywords: obj.keywords,
@@ -31,12 +31,12 @@ function getURL(db, col, target, callback) {
                                 platform: 'google',
                                 type: obj.type,
                                 info: {
-                                    ranking: rank
+                                    //ranking: rank
                                 },
                                 integrate: 0
                             };
                             db.collection(col).insert(result, function (err) {
-                                if (err === null) {rank++;}
+                                //if (err === null) {rank++;}
                                 cbItem();
                             })
                         },

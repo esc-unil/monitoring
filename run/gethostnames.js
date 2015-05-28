@@ -97,7 +97,6 @@ function integrate(db, obj, col, callback){
                     }
                 }
                 db.collection(col).update({_id: obj.hostname}, add, function(err){callback(err);});
-
             }
         }
     });
