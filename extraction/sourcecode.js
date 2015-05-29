@@ -22,26 +22,30 @@ function sourceCode(url, callback){
     });
 }
 
+/*
+function domStructure(xmlString, callback){
+    var handler = new htmlparser.DefaultHandler(function (err, document) {
+        if (err) {callback(err);}
+        else {
+            var domtree = {name: '/'};
+            tree(document, domtree);
+            console.log(JSON.stringify(domtree));
+        }
+    });
+    var parser = new htmlparser.Parser(handler);
+    parser.parseComplete(xmlString);
+}*/
+
 function dom(string, callback){
     var handler = new htmlparser.DefaultHandler(function (err, dom) {
         if (err) {callback(err);}
         else {callback(null, dom)}
-    });
+    }, { verbose: false, ignoreWhitespace: true });
     var parser = new htmlparser.Parser(handler);
     parser.parseComplete(string);
 }
 
-sourceCode('http://unil.ch/index.html', function (err,res){
-    var domtree = {name: '/'};
-    dom(res, function(err, document){
-        tree(document, domtree);
-
-        console.log(JSON.stringify(domtree));
-    });
-
-});
-
-
+/*
 
 function tree(array, branch){
             var c = 0;
@@ -56,3 +60,9 @@ function tree(array, branch){
                 });
             }
 }
+*/
+
+sourceCode('http://example.com/', function (err,res){
+    //domStructure(res, function(err){});
+    dom(res, function(a,b){console.log(JSON.stringify(b));})
+});
