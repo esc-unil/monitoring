@@ -12,6 +12,7 @@
     "async": "^0.9.0",
     "extend": "^2.0.0",
     "googleapis": "^2.0.2",
+    "htmlparser": "^1.7.7",
     "mongodb": "^2.0.27",
     "oauth": "^0.9.12",
     "querystring": "^0.2.0",
