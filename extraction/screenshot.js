@@ -17,7 +17,7 @@ function screenshot(hostname, callback){
     };
 
 
-    webshot(hostname, './webshot/' + hostname + '.jpg', options, function(err) {
+    webshot(hostname, '/webshot/' + hostname + '.jpg', options, function(err) {
     });
 }
 
