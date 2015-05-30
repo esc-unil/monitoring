@@ -16,6 +16,7 @@
     "mongodb": "^2.0.27",
     "oauth": "^0.9.12",
     "querystring": "^0.2.0",
-    "request": "^2.55.0"
+    "request": "^2.55.0",
+    "webshot": "^0.16.0"
   }
 }

@@ -62,7 +62,7 @@ function tree(array, branch){
 }
 */
 
-sourceCode('http://example.com/', function (err,res){
-    //domStructure(res, function(err){});
+sourceCode('http://example.com', function (err,res){
+    console.log(res);
     dom(res, function(a,b){console.log(JSON.stringify(b));})
 });
