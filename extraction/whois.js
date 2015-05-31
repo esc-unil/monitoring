@@ -6,6 +6,6 @@
 var whois = require('node-whois');
 
 
-whois.lookup('seelit.com', function(err, data) {
+whois.lookup('anabolics.com', function(err, data) {
     console.log(data)
 });

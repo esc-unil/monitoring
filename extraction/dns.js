@@ -12,6 +12,7 @@
  */
 
 var dns = require('dns');
+var async = require('async');
 
 function ip(hostname, callback) {
     dns.lookup(hostname, function onLookup(err, res) {
@@ -20,49 +21,55 @@ function ip(hostname, callback) {
     });
 }
 
-
-function reverse(hostname, callback){ //resolve6 existe all ip?
-    dns.resolve4(hostname, function (err, addresses) {
-        if (err) {callback(err);}
-        else {
-
-            console.log('addresses: ' + JSON.stringify(addresses));
-
-            addresses.forEach(function (a) {
-                dns.reverse(a, function (err, hostnames) { // ip -> nom de domaine
-                    if (err) {callback(err);}
-                    else {
-                        console.log('reverse for ' + a + ': ' + JSON.stringify(hostnames));
-                    }
-                 });
-            });
-         }
-    });
-    dns.resolve(hostname, 'MX', function (err, addresses) {
-        if (err) {callback(err);}
-        else {
-
-            console.log('addresses: ' + JSON.stringify(addresses));
-
-
-
-        }
-    });
-}
-
 function ns(hostname, callback){
-    dns.resolve(hostname, 'NS', function (err, res) {
-        if (err) {callback(err);}
-        else {callback(null, res);}
-    });
+    dns.resolve(hostname, 'NS', callback);
 }
 
-//ip('www.steroid.com', function(a,b){console.log(b);});
+function mx(hostname, callback){
+    dns.resolve(hostname, 'MX', callback);
+}
 
-ns('unil.ch', function(a,b){console.log(b);});
-reverse('unil.ch', function(a,b){console.log(b);});
+function ipv4(hostname, callback){
+    dns.resolve(hostname, 'A', callback);
+}
 
-//dns.lookup('mx.unil.ch', function(a,b){console.log(b);});
+function ipv6(hostname, callback){
+    dns.resolve(hostname, 'AAAA', callback);
+}
+
+
+function reverse(hostname, callback){
+    async.concatSeries(
+        ['resolve4', 'resolve6'],  //reverse ipv4 et ipv6
+        function(resolve, cb){
+            dns[resolve](hostname, function (err, addresses) {
+                if (err) {cb();}
+                else {
+                    async.concatSeries(
+                        addresses,
+                        function(ip, cbip){
+                            dns.reverse(ip, function (err, hostnames) { // ip -> nom de domaine
+                                if (err) {var hostnames= undefined;}
+                                cbip(null, {hostname: hostname, ip: ip, reverse: hostnames});
+                            });
+                        },
+                        function(err, res){
+                            cb(null, res);
+                        }
+                    );
+                }
+            })
+        },
+        function (err, res){
+            if (err) {callback(err);}
+            else {callback(err, res);}
+        }
+    );
+}
 
 
 
+mx('anabolics.com', function(a,b){console.log(b);});
+mx('buysteroids.com', function(a,b){console.log(b);});
+
+//reverse('anabolics.com', function(error, domains) {console.log(domains); });
