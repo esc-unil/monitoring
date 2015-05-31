@@ -7,8 +7,6 @@
 var request = require('request');
 var htmlparser = require("htmlparser");
 
-
-
 function sourceCode(url, callback){
     var options = {
         url: url,
