@@ -6,6 +6,7 @@
 
 var request = require('request');
 var htmlparser = require("htmlparser");
+var http = require('http');
 
 function sourceCode(url, callback){
     var options = {
@@ -60,7 +61,30 @@ function tree(array, branch){
 }
 */
 
+function header(url, callback){
+    var options = {
+        method: "GET",
+        url: url,
+        followAllRedirects: true,
+        timeout: 50000,
+        rejectUnauthorized: false,
+        requestCert: true,
+        pool:  new http.Agent({'maxSockets': Infinity})
+    };
+    request(options, function (err, res) {
+        if (err) {
+            callback(err, null)
+        } else {
+            callback(null, res.headers);
+        }
+    }).setMaxListeners(0);
+}
+
+header('http://unil.ch', function (a,b) {console.log(JSON.stringify(b));});
+
 sourceCode('http://example.com', function (err,res){
     console.log(res);
     dom(res, function(a,b){console.log(JSON.stringify(b));})
 });
+
+
