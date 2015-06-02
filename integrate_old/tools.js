@@ -46,14 +46,15 @@ function findURL(string){ //cherche tout les URL d'un texte
 }
 
 function expandURL(url, callback) {
+        var pool = new http.Agent({'maxSockets': Infinity});
         var options = {
             method: "HEAD",
             url: url,
             followAllRedirects: true,
-            timeout: 5000,
+            timeout: 50000,
             rejectUnauthorized: false,
             requestCert: true,
-            pool: new http.Agent({'maxSockets': Infinity})
+            pool: pool
         };
         request(options, function (err, res) {
             if (err) {

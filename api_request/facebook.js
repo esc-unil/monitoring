@@ -15,7 +15,7 @@ var facebookSecret = keys.facebookSecret;
 
 
 function pagesSearch(keyword, num, opt_args, callback) {
-// Fonction de recherche de page sur Facebook
+// Fonction de recherche de page sur Facebook (comprend les lieux)
 // Informations sur les arguments optionnels (opt_args): https://developers.facebook.com/docs/graph-api/using-graph-api/v2.3
     if (typeof opt_args === 'function') {callback = opt_args; opt_args = null;}
     var args = {q: keyword, limit: num, type:'page', access_token: facebookKey + '|' + facebookSecret};

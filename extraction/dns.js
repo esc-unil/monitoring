@@ -29,6 +29,10 @@ function mx(hostname, callback){
     dns.resolve(hostname, 'MX', callback);
 }
 
+function txt(hostname, callback){
+    dns.resolve(hostname, 'TXT', callback);
+}
+
 function ipv4(hostname, callback){
     dns.resolve(hostname, 'A', callback);
 }
@@ -68,8 +72,16 @@ function reverse(hostname, callback){
 }
 
 
+//mx('anabolics.com', function(a,b){console.log('a',b);});
+//mx('buysteroids.com', function(a,b){console.log('b',b);});
 
-mx('anabolics.com', function(a,b){console.log(b);});
-mx('buysteroids.com', function(a,b){console.log(b);});
+ns('anabolics.com', function(a,b){console.log('a',b);});
+ns('buysteroids.com', function(a,b){console.log('b',b);});
+
+//ipv4('buysteroids.com', function(a,b){console.log('b', b);});
+//ipv4('mail.anabolics.com', function(a,b){console.log('a', b);});
+
+//ipv4('buysteroids.com', function(a,b){console.log('b', b);});
+//ipv4('anabolics.com', function(a,b){console.log('a', b);});
 
 //reverse('anabolics.com', function(error, domains) {console.log(domains); });
