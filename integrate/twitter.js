@@ -35,9 +35,6 @@ function getPost(db, col, target, callback) {
                             async.each(
                                 urls,
                                 function (url, cbUrl) {
-                                    //--------------
-
-
                                     var hostname = urlparse(url).hostname;
                                     var id = 'twitter;' + obj.type + ';' + obj.result.id_str + ';' + hostname;
                                     var retweet = false;
@@ -56,7 +53,7 @@ function getPost(db, col, target, callback) {
                                                     platform: 'twitter',
                                                     type: obj.type,
                                                     info: {
-                                                        date: obj.result.created_date,
+                                                        date: obj.result.created_at,
                                                         id: obj.result.id_str,
                                                         author: obj.result.user.screen_name,
                                                         author_id: obj.result.user.id_str,
@@ -75,12 +72,6 @@ function getPost(db, col, target, callback) {
                                             }
                                         }
                                     });
-
-
-
-
-
-                                    //-----------------
                                 },
                                 function (err) {cbObj();}
                             );
@@ -113,8 +104,6 @@ function getUsers(db, col, target, callback) {
                                 async.eachSeries(
                                     urls,
                                     function (url, cbUrl) {
-                                        //---------------------
-
                                         var hostname = urlparse(url).hostname;
                                         var id = 'twitter;' + obj.type + ';' + item.id_str + ';' + hostname;
 
@@ -152,8 +141,6 @@ function getUsers(db, col, target, callback) {
                                                 }
                                             }
                                         });
-
-                                        //--------------
                                     },
                                     function (err) {cbItem();}
                                 );

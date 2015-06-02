@@ -40,8 +40,6 @@ function getPost(db, col, target, callback) {
                         async.each(
                             urls,
                             function (url, cbUrl) {
-
-                                //---------------------------
                                 var hostname = urlparse(url).hostname;
                                 var id = 'google_plus;' + obj.type + ';' + obj.result.id + ';' + hostname;
                                 db.collection(col).find({_id:id}).toArray(function (err, elem) {
@@ -74,8 +72,6 @@ function getPost(db, col, target, callback) {
                                         }
                                     }
                                 });
-
-                                //--------------
                             },
                             function (err) {cbObj();}
                         );
@@ -108,8 +104,6 @@ function getUsers(db, col, target, callback) {
                                 async.eachSeries(
                                     urls,
                                     function (url, cbUrl) {
-                                        //--------------------------------
-
                                         var hostname = urlparse(url).hostname;
                                         var id = 'google_plus;' + obj.type + ';' + item.id + ';' + hostname;
                                         db.collection(col).find({_id:id}).toArray(function (err, elem) {
@@ -143,8 +137,6 @@ function getUsers(db, col, target, callback) {
                                                 }
                                             }
                                         });
-
-                                        //----------------------------
                                     },
                                     function (err) {cbItem();}
                                 );

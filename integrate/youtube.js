@@ -25,8 +25,6 @@ function getURL(db, col, target, callback) {
                         async.each(
                             urls,
                             function(url, cbUrl){
-                                //-------------------
-
                                 var hostname = urlparse(url).hostname;
                                 var id = 'youtube;' + obj.type + ';' + obj.result.id.videoId + ';' + hostname;
                                 db.collection(col).find({_id:id}).toArray(function (err, elem) {
@@ -56,10 +54,6 @@ function getURL(db, col, target, callback) {
                                         }
                                     }
                                 });
-
-
-
-                                //-------------------
                             },
                             function(err){cbObj();}
                         );

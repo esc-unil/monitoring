@@ -28,11 +28,8 @@ function getURL(db, col, target, callback) {
                                 async.eachSeries(
                                     urls,
                                     function (url, cbUrl) {
-                                        //----------------------------------------------
-
                                         var hostname = urlparse(url).hostname;
                                         var id = 'facebook;' + obj.type + ';' + item.id + ';' + hostname;
-
                                         db.collection(col).find({_id:id}).toArray(function (err, elem) {
                                             if (err) cbUrl();
                                             else {
@@ -66,9 +63,6 @@ function getURL(db, col, target, callback) {
                                                 }
                                             }
                                         });
-
-
-                                        //--------------------------------------------------
                                     },
                                     function (err) {cbItem();}
                                 );

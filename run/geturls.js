@@ -50,4 +50,4 @@ var platforms = [youtube, reddit, google, bing, yahoo, facebook, twitter, gplus]
 
 //run(monitoring.DBrecherche, 'urls', {integrate:0}, platforms);
 
-run(monitoring.DBrecherche, 'urlst', {integrate:1}, platforms);
+run(monitoring.DBrecherche, 'urlst', {integrate:1}, [twitter]);

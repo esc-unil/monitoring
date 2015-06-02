@@ -24,8 +24,6 @@ function getURL(db, col, target, callback) {
                         async.each(
                             urls,
                             function(url, cbUrl){
-                                //-------------
-
                                 var hostname = urlparse(url).hostname;
                                 var id = 'reddit;' + obj.type + ';' + obj.result.name + ';' + hostname;
                                 db.collection(col).find({_id:id}).toArray(function (err, elem) {
@@ -58,9 +56,6 @@ function getURL(db, col, target, callback) {
                                         }
                                     }
                                 });
-
-
-                                //-----------------
                             },
                             function(err){cbObj();}
                         );
