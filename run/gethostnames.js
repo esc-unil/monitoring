@@ -7,8 +7,11 @@
  */
 
 var async = require('async');
+var nwhois = require('node-whois').lookup;
 var mongoClient = require('mongodb').MongoClient;
 var screenshot = require('../extraction/screenshot').screenshot;
+var headersNbody = require('../extraction/request').headersNbody;
+var dns = require('../extraction/dns');
 
 var monitoring = require('../monitoring.json');
 
@@ -25,15 +28,14 @@ function run(database, urlsCol, hostnamesCol, target){
             db.collection(urlsCol).distinct('hostname', target, function(err, hostnames){
                 if (err){console.log(err); db.close();}
                 else {
-                    var h = hostnames.slice(0,20);
                     async.eachLimit(
-                        h,
-                        20,
+                        hostnames,
+                        10,
                         function(hostname, cb){
                             db.collection(hostnamesCol).count({hostname: hostname}, function (err, n) {
                                 if (err || n!=0){cb();}
                                 else if (n === 0){
-                                    integrate(db, hostname, hostnamesCol, cb);
+                                    integrate(db, hostname, urlsCol, hostnamesCol, cb);
                                 }
                             });
                         },
@@ -50,51 +52,92 @@ function run(database, urlsCol, hostnamesCol, target){
     });
 }
 
-function integrate(db, hostname, col, callback){
+function integrate(db, hostname, urlsCol, hostnamesCol, callback){
     var date = new Date();
-    var id = hostname + ';' + date.toISOString();
     var obj = {
-        _id: id,
-        hostname: hostname,
+        _id: hostname,
         date: date,
         category: null
     };
-    console.log(obj);
-
-    screen(hostname, obj, function(err) {
-
-        db.collection(col).insert(obj, function (err) {
-            if (err) {
-                callback(err);
-            }
+    async.eachSeries(
+        [screen, request, ip, ns, mx, soa],
+        function(fct, cb){
+            fct(hostname, obj, cb);
+        },
+        function(err){
+            if (err){console.log(err); callback(err);}
             else {
-                callback(null);
-
-
-                //gerer l'update des url ok
+                db.collection(hostnamesCol).insert(obj, function (err) {
+                    if (err) {callback(err);}
+                    else {
+                        db.collection(urlsCol).update({hostname: hostname, integrate: 0}, {$set: {integrate: 1}}, function (err) {
+                            if (err) console.log(obj._id, err);
+                            callback(null);
+                        });
+                    }
+                });
             }
-        });
-
-
-    });
-
-
-
-
+        }
+    );
 }
 
 function screen(hostname, obj, callback){
-    var screenHostname = hostname + '_' + obj.date.getTime() + '.jpg';
+    var screenHostname = hostname + '.jpg';
     var screen = monitoring.screenshotFolder +  '/' + screenHostname;
     screenshot(hostname, screen, function(err) {
-        if (err) {obj['screenshot'] = null;}
-        else {obj['screenshot'] = screenHostname;}
+        if (err) {obj.screenshot = null;}
+        else {obj.screenshot = screenHostname;}
         callback();
     });
 }
 
 function request(hostname, obj, callback){
-
+    headersNbody(hostname, function (err, headers, body){
+        obj.headers = headers;
+        obj.body = body;
+        callback();
+    });
 }
+
+function ip(hostname, obj, callback){
+    dns.ips(hostname, function (err, ips){
+        if (err || ips === [] || ips === undefined){obj.ip = null;}
+        else {obj.ip = ips;}
+        callback();
+    });
+}
+
+function ns(hostname, obj, callback){
+    dns.ns(hostname, function (err, ns){
+        if (err || ns === [] || ns === undefined){obj.ns = null;}
+        else {obj.ns = ns;}
+        callback();
+    });
+}
+
+function mx(hostname, obj, callback){
+    dns.mx(hostname, function (err, mx){
+        if (err || mx === [] || mx === undefined){obj.mx = null;}
+        else {obj.mx = mx;}
+        callback();
+    });
+}
+
+function soa(hostname, obj, callback){
+    dns.soa(hostname, function (err, soa){
+        if (err || soa === [] || soa === undefined){obj.soa = null;}
+        else {obj.soa = soa;}
+        callback();
+    });
+}
+
+/*function whois(hostname, obj, callback){
+    nwhois(hostname, function(err, data){
+        if (err){obj.whois = null;}
+        else {obj.whois = data;}
+        callback();
+    });
+}*/
+
 
 run(monitoring.DBrecherche, 'urls', 'hostnames', {integrate:0});

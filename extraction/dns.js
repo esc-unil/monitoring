@@ -16,29 +16,77 @@ var async = require('async');
 
 function ip(hostname, callback) {
     dns.lookup(hostname, function onLookup(err, res) {
-        if (err) {callback(err, null)}
+        if (err) {callback(err)}
         else {callback(null, res);}
     });
 }
 
+function ips(hostname, callback) { //recherche IP (v4 et v6)
+    dns.resolve(hostname, 'A', function(err, ipv4){
+        var ips = [];
+        if (!err || ipv4 != null || ipv4 != undefined) {ips = ipv4;}
+        dns.resolve(hostname, 'AAAA', function(err, ipv6){
+            if (!err || ipv6 != null || ipv6 != undefined) {ips = ips.concat(ipv6)}
+            if (ips === []) {callback(err);}
+            else {callback(null, ips);}
+        });
+    });
+}
+
 function ns(hostname, callback){
-    dns.resolve(hostname, 'NS', callback);
+    dns.resolve(hostname, 'NS', function(err, res){
+        if (err) {callback(err);}
+        else {
+            async.concat(
+                res,
+                function (item, cb) {
+                    ips(item, function (err, res) {
+                        if (err) {cb(null, {dns: item, ip: null});}
+                        else {cb(null, {dns: item, ip: res});}
+                    });
+                },
+                function (err, dns) {
+                    if (err) {callback(err);}
+                    else {callback(null, dns);}
+                }
+            );
+        }
+    });
 }
 
 function mx(hostname, callback){
-    dns.resolve(hostname, 'MX', callback);
+    dns.resolve(hostname, 'MX', function(err, res){
+        if (err){callback(err);}
+        else {
+            async.concat(
+                res,
+                function (item, cb) {
+                    ips(item.exchange, function (err, res) {
+                        if (err) {cb(null, {exchange: item.exchange, priority: item.priority, ip: null});}
+                        else {cb(null, {exchange: item.exchange, priority: item.priority, ip: res});}
+                    });
+                },
+                function (err, dns) {
+                    if (err) {callback(err);}
+                    else {callback(null, dns);}
+                }
+            );
+        }
+    });
 }
 
-function txt(hostname, callback){
-    dns.resolve(hostname, 'TXT', callback);
-}
-
-function ipv4(hostname, callback){
-    dns.resolve(hostname, 'A', callback);
-}
-
-function ipv6(hostname, callback){
-    dns.resolve(hostname, 'AAAA', callback);
+function soa(hostname, callback){
+    dns.resolve(hostname, 'SOA', function(err, soa){
+        if (err){callback(err);}
+        else {
+            ips(soa.nsname, function (err, res) {
+                var obj = soa;
+                if (err) {obj.ip = null;}
+                else {obj.ip = res;}
+                callback(null, obj);
+            });
+        }
+    });
 }
 
 
@@ -71,17 +119,8 @@ function reverse(hostname, callback){
     );
 }
 
+exports.ips = ips;
+exports.ns = ns;
+exports.mx = mx;
+exports.soa = soa;
 
-//mx('anabolics.com', function(a,b){console.log('a',b);});
-//mx('buysteroids.com', function(a,b){console.log('b',b);});
-
-ns('anabolics.com', function(a,b){console.log('a',b);});
-ns('buysteroids.com', function(a,b){console.log('b',b);});
-
-//ipv4('buysteroids.com', function(a,b){console.log('b', b);});
-//ipv4('mail.anabolics.com', function(a,b){console.log('a', b);});
-
-//ipv4('buysteroids.com', function(a,b){console.log('b', b);});
-//ipv4('anabolics.com', function(a,b){console.log('a', b);});
-
-//reverse('anabolics.com', function(error, domains) {console.log(domains); });
