@@ -24,9 +24,6 @@ function getPost(db, col, target, callback) {
             async.eachSeries(
                 res,
                 function (obj, cbObj) {
-                    db.collection('google_plus').update({_id: obj._id}, {$set: {integrate: 1}}, function (err) {
-                        if (err) console.log(obj._id, err);
-                    });
                     var list = [obj.result.title, obj.result.object.content];
                     var attachments = obj.result.object.attachments;
                     if (attachments != undefined){ //fichiers joints au poste
@@ -73,7 +70,12 @@ function getPost(db, col, target, callback) {
                                     }
                                 });
                             },
-                            function (err) {cbObj();}
+                            function (err) {
+                                db.collection('google_plus').update({_id: obj._id}, {$set: {integrate: 1}}, function (err) {
+                                    if (err) console.log(obj._id, err);
+                                    cbObj();
+                                });
+                            }
                         );
                     });
                 },
@@ -91,9 +93,6 @@ function getUsers(db, col, target, callback) {
             async.eachSeries(
                 res,
                 function (obj, cbObj) {
-                    db.collection('google_plus').update({_id: obj._id}, {$set: {integrate: 1}}, function (err) {
-                        if (err) console.log(obj._id, err);
-                    });
                     async.each(
                         obj.result,
                         function (item, cbItem) {
@@ -144,7 +143,10 @@ function getUsers(db, col, target, callback) {
                         },
                         function (err) {
                             if (err) {console.log(err);}
-                            cbObj()
+                            db.collection('google_plus').update({_id: obj._id}, {$set: {integrate: 1}}, function (err) {
+                                if (err) console.log(obj._id, err);
+                                cbObj()
+                            });
                         }
                     );
                 },

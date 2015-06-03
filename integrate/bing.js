@@ -15,9 +15,6 @@ function getURL(db, col, target, callback) {
             async.eachSeries(
                 res,
                 function (obj, cbObj) {
-                    db.collection('bing').update({_id: obj._id}, {$set: {integrate: 1}}, function (err) {
-                        if (err) console.log(obj._id, err);
-                    });
                     async.eachSeries(
                         obj.result,
                         function (item, cbItem) {
@@ -56,7 +53,10 @@ function getURL(db, col, target, callback) {
                         },
                         function (err) {
                             if (err) {console.log(err);}
-                            cbObj()
+                            db.collection('bing').update({_id: obj._id}, {$set: {integrate: 1}}, function (err) {
+                                if (err) console.log(obj._id, err);
+                                cbObj()
+                            });
                         }
                     );
                 },

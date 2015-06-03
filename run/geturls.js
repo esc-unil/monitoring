@@ -27,8 +27,9 @@ function run(database, col, target, platforms){
         if (err){console.log(err);}
         else {
             var i = 1;
-            async.eachSeries(
+            async.eachLimit(
                 platforms,
+                5,
                 function (platform, cb){
                     platform.getURL(db, col, target, function(err){
                         if (err) {console.log(err);}

@@ -16,9 +16,6 @@ function getURL(db, col, target, callback) {
             async.eachSeries(
                 res,
                 function (obj, cbObj) {
-                    db.collection('youtube').update({_id: obj._id}, {$set: {integrate: 1}}, function (err) {
-                        if (err) console.log(obj._id, err);
-                    });
                     var title = obj.result.snippet.title;
                     var description = obj.result.snippet.description;
                     tools.findAllUrls([title, description], function (err, urls){
@@ -55,7 +52,12 @@ function getURL(db, col, target, callback) {
                                     }
                                 });
                             },
-                            function(err){cbObj();}
+                            function(err){
+                                db.collection('youtube').update({_id: obj._id}, {$set: {integrate: 1}}, function (err) {
+                                    if (err) console.log(obj._id, err);
+                                    cbObj();
+                                });
+                            }
                         );
                     });
                 },

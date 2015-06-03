@@ -24,9 +24,6 @@ function getPost(db, col, target, callback) {
             async.eachSeries(
                 res,
                 function (obj, cbObj) {
-                    db.collection('twitter').update({_id: obj._id}, {$set: {integrate: 1}}, function (err) {
-                        if (err) console.log(obj._id, err);
-                    });
                     var urls = obj.result.entities.urls;
                     if (urls.length > 0) {
                         var list = [];
@@ -76,7 +73,12 @@ function getPost(db, col, target, callback) {
                                 function (err) {cbObj();}
                             );
                         });
-                    } else {cbObj();}
+                    } else {
+                        db.collection('twitter').update({_id: obj._id}, {$set: {integrate: 1}}, function (err) {
+                            if (err) console.log(obj._id, err);
+                            cbObj();
+                        });
+                    }
                 },
                 function (err) {callback(err);}
             );
@@ -92,9 +94,6 @@ function getUsers(db, col, target, callback) {
             async.eachSeries(
                 res,
                 function (obj, cbObj) {
-                    db.collection('twitter').update({_id: obj._id}, {$set: {integrate: 1}}, function (err) {
-                        if (err) console.log(obj._id, err);
-                    });
                     async.each(
                         obj.result,
                         function (item, cbItem) {
@@ -148,7 +147,10 @@ function getUsers(db, col, target, callback) {
                         },
                         function (err) {
                             if (err) {console.log(err);}
-                            cbObj()
+                            db.collection('twitter').update({_id: obj._id}, {$set: {integrate: 1}}, function (err) {
+                                if (err) console.log(obj._id, err);
+                                cbObj()
+                            });
                         }
                     );
                 },

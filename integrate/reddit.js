@@ -15,9 +15,6 @@ function getURL(db, col, target, callback) {
             async.eachSeries(
                 res,
                 function (obj, cbObj) {
-                    db.collection('reddit').update({_id: obj._id}, {$set: {integrate: 1}}, function (err) {
-                        if (err) console.log(obj._id, err);
-                    });
                     var title = obj.result.title;
                     var text = obj.result.selftext;
                     tools.findAllUrls([title, text], function (err, urls){
@@ -57,7 +54,12 @@ function getURL(db, col, target, callback) {
                                     }
                                 });
                             },
-                            function(err){cbObj();}
+                            function(err){
+                                db.collection('reddit').update({_id: obj._id}, {$set: {integrate: 1}}, function (err) {
+                                    if (err) console.log(obj._id, err);
+                                    cbObj();
+                                });
+                            }
                         );
                     });
                 },
