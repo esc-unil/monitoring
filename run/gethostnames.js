@@ -8,6 +8,7 @@
 
 var async = require('async');
 var mongoClient = require('mongodb').MongoClient;
+var screenshot = require('../extraction/screenshot').screenshot;
 
 var monitoring = require('../monitoring.json');
 
@@ -21,85 +22,79 @@ function run(database, urlsCol, hostnamesCol, target){
     mongoClient.connect(mongoPath, function(err, db) {
         if (err){console.log(err);}
         else {
-            db.collection(urlsCol).find(target).sort({date:1}).toArray(function (err, res) {
-                if (err) {db.close(); console.log(err);}
-                else{
-                    async.eachSeries(
-                        res,
-                        function(item, cb){
-                            integrate(db, item, hostnamesCol, function(err){
-                                if (err){cb();}
-                                else {
-                                    db.collection(urlsCol).update({_id: item._id}, {$set: {integrate: 1}}, function(err){
-                                        if (err) console.log(item._id, err);
-                                        cb();
-                                    });
+            db.collection(urlsCol).distinct('hostname', target, function(err, hostnames){
+                if (err){console.log(err); db.close();}
+                else {
+                    var h = hostnames.slice(0,20);
+                    async.eachLimit(
+                        h,
+                        20,
+                        function(hostname, cb){
+                            db.collection(hostnamesCol).count({hostname: hostname}, function (err, n) {
+                                if (err || n!=0){cb();}
+                                else if (n === 0){
+                                    integrate(db, hostname, hostnamesCol, cb);
                                 }
                             });
                         },
-                        function() {
-                            db.collection(urlsCol).count(target, function (err, res) {
-                                if (err || res === 0){
-                                    db.close();
-                                    console.log('done');
-                                }
-                                else {run(database, urlsCol, hostnamesCol, target);}
-                            });
+                        function(err){
+                            if (err) {console.log(err);}
+                            else {console.log('done');}
+                            db.close();
                         }
                     );
                 }
             });
+
         }
     });
 }
 
-function integrate(db, obj, col, callback){
-    db.collection(col).find({_id:obj.hostname}).toArray(function (err, res) {
-        if (err) callback(err);
-        else {
-            res = res[0];
-            var stats = {};
-            stats[obj.platform] = {date : obj.date, keywords:[obj.keywords], count:1};
-            stats[obj.platform][obj.type + '_date'] = obj.date;
-            stats[obj.platform][obj.type + '_keywords'] = [obj.keywords];
-            stats[obj.platform][obj.type + '_count'] = 1;
-            if (res === undefined) { //pas encore eu le hostname
-                var hostname = {
-                    _id : obj.hostname,
-                    date : obj.date,
-                    platforms : [obj.platform],
-                    keywords : [obj.keywords],
-                    urls: [obj.url],
-                    count:1,
-                    stats : stats,
-                    'class' : null
-                };
-                db.collection(col).insert(hostname, function(err){callback(err);});
+function integrate(db, hostname, col, callback){
+    var date = new Date();
+    var id = hostname + ';' + date.toISOString();
+    var obj = {
+        _id: id,
+        hostname: hostname,
+        date: date,
+        category: null
+    };
+    console.log(obj);
+
+    screen(hostname, obj, function(err) {
+
+        db.collection(col).insert(obj, function (err) {
+            if (err) {
+                callback(err);
             }
-            else{
-                var add = {$addToSet: {urls: obj.url, platforms: obj.platform, keywords: obj.keywords}, $inc: {count: 1}};
-                if (res.stats[obj.platform] === undefined){ //pas encore eu avec cette plateforme
-                    add.$set = {};
-                    add.$set['stats.' + obj.platform] = stats[obj.platform];
-                }
-                else { //ajout plateforme dans stats
-                    add.$addToSet['stats.' + obj.platform + '.keywords'] = obj.keywords; //ajout keywords pour tout types de recherche
-                    add.$inc['stats.' + obj.platform + '.count'] = 1;
-                    if (res.stats[obj.platform][obj.type + '_date'] === undefined){ // pas encore le type de recherche pour la plateforme
-                        add.$set = {};
-                        add.$set['stats.' + obj.platform + '.' + obj.type + '_date'] = obj.date;
-                        add.$set['stats.' + obj.platform + '.' + obj.type + '_keywords'] = [obj.keywords];
-                        add.$set['stats.' + obj.platform + '.' + obj.type + '_count'] = 1;
-                    }
-                    else { // ajout keywords pour type particulier
-                        add.$addToSet['stats.' + obj.platform + '.' + obj.type + '_keywords'] = obj.keywords;
-                        add.$inc['stats.' + obj.platform + '.' + obj.type + '_count'] = 1;
-                    }
-                }
-                db.collection(col).update({_id: obj.hostname}, add, function(err){callback(err);});
+            else {
+                callback(null);
+
+
+                //gerer l'update des url ok
             }
-        }
+        });
+
+
     });
+
+
+
+
+}
+
+function screen(hostname, obj, callback){
+    var screenHostname = hostname + '_' + obj.date.getTime() + '.jpg';
+    var screen = monitoring.screenshotFolder +  '/' + screenHostname;
+    screenshot(hostname, screen, function(err) {
+        if (err) {obj['screenshot'] = null;}
+        else {obj['screenshot'] = screenHostname;}
+        callback();
+    });
+}
+
+function request(hostname, obj, callback){
+
 }
 
 run(monitoring.DBrecherche, 'urls', 'hostnames', {integrate:0});

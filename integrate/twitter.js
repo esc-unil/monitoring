@@ -70,7 +70,12 @@ function getPost(db, col, target, callback) {
                                         }
                                     });
                                 },
-                                function (err) {cbObj();}
+                                function (err) {
+                                    db.collection('twitter').update({_id: obj._id}, {$set: {integrate: 1}}, function (err) {
+                                        if (err) console.log(obj._id, err);
+                                        cbObj();
+                                    });
+                                }
                             );
                         });
                     } else {
