@@ -6,7 +6,7 @@
 var whois = require('node-whois');
 
 
-whois.lookup('www.bookdepository.com', function(err, data) {
+whois.lookup('74.206.160.137', function(err, data) {
     if (err){callback(err);}
 
     console.log(data)

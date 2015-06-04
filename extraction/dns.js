@@ -123,4 +123,3 @@ exports.ips = ips;
 exports.ns = ns;
 exports.mx = mx;
 exports.soa = soa;
-

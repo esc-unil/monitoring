@@ -26,12 +26,19 @@ function run(database, col, target){
         if (err){console.log(err);}
         else {
             db.collection(col).find(target, {_id:1}).toArray(function(err, hostnames){
+                var c =1;
+                var all = hostnames.length;
                 if (err){console.log(err); db.close();}
                 else {
-                    async.eachSeries(
+                    async.eachLimit(
                         hostnames,
+                        20,
                         function(item, cb){
-                            getData(db, item._id, cb);
+                            getData(db, item._id, function(err){
+                                console.log(c.toString() + '/' + all.toString());
+                                c = c+1;
+                                cb();
+                            });
                         },
                         function(err){
                             console.log('done');
