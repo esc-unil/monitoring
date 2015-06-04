@@ -28,14 +28,21 @@ function run(database, urlsCol, hostnamesCol, target){
             db.collection(urlsCol).distinct('hostname', target, function(err, hostnames){
                 if (err){console.log(err); db.close();}
                 else {
+                    var h=hostnames.slice(0,100);
                     async.eachLimit(
-                        hostnames,
+                        h,
                         10,
                         function(hostname, cb){
                             db.collection(hostnamesCol).count({hostname: hostname}, function (err, n) {
                                 if (err || n!=0){cb();}
                                 else if (n === 0){
                                     integrate(db, hostname, urlsCol, hostnamesCol, cb);
+                                }
+                                else{
+                                    db.collection(urlsCol).update({hostname: hostname}, {$set: {integrate: 1}}, {multi:true}, function (err) {
+                                        if (err) console.log(obj._id, err);
+                                        cb();
+                                    });
                                 }
                             });
                         },
@@ -59,6 +66,7 @@ function integrate(db, hostname, urlsCol, hostnamesCol, callback){
         date: date,
         category: null
     };
+    console.log(hostname);
     async.eachSeries(
         [screen, request, ip, ns, mx, soa],
         function(fct, cb){
@@ -70,7 +78,7 @@ function integrate(db, hostname, urlsCol, hostnamesCol, callback){
                 db.collection(hostnamesCol).insert(obj, function (err) {
                     if (err) {callback(err);}
                     else {
-                        db.collection(urlsCol).update({hostname: hostname, integrate: 0}, {$set: {integrate: 1}}, function (err) {
+                        db.collection(urlsCol).update({hostname: hostname}, {$set: {integrate: 1}}, {multi:true}, function (err) {
                             if (err) console.log(obj._id, err);
                             callback(null);
                         });
