@@ -1,6 +1,9 @@
 'use strict';
 /**
  * Created by tpineau
+ *
+ * SN: hostname/post
+ * SEO: hostname/seo
  */
 
 var async = require('async');
