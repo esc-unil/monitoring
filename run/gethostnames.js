@@ -65,4 +65,4 @@ function run(database, urlsCol, hostnamesCol, target){
 }
 
 
-run(monitoring.DBrecherche, 'urls', 'hostnames', {integrate:1});
+run(monitoring.DBrecherche, 'urls', 'hostnames', {integrate:0});
