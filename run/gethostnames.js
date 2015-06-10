@@ -34,18 +34,26 @@ function run(database, urlsCol, hostnamesCol, target){
                             var domain = hostname._id.match(re);
                             if (domain != null) {
                                 hostname.domain = domain[0];
-
-                                var screenHostname = hostname._id + '.jpg';
-                                var screen = monitoring.screenshotFolder +  '/' + screenHostname;
-                                screenshot(hostname._id, screen, function(err) {
-                                    if (err) {hostname.screenshot = null;}
-                                    else {hostname.screenshot = screenHostname;}
-                                    db.collection(hostnamesCol).insert(hostname, function (err) {
+                                db.collection('hostnames').count({_id: hostname._id}, function (err, res){
+                                    if (err || res != 0) {
                                         if (err) {console.log(err);}
                                         cb()
-                                    });
+                                    }
+                                    else {
+                                        var screenHostname = hostname._id + '.jpg';
+                                        var screen = monitoring.screenshotFolder + '/' + screenHostname;
+                                        screenshot(hostname._id, screen, function (err) {
+                                            if (err) {hostname.screenshot = null;}
+                                            else {hostname.screenshot = screenHostname;}
+                                            db.collection(hostnamesCol).insert(hostname, function (err) {
+                                                if (err) {console.log(err);}
+                                                cb()
+                                            });
+                                        });
+                                    }
                                 });
                             }
+                            else {cb();}
                         },
                         function(err){
                             if (err) {console.log(err);}
