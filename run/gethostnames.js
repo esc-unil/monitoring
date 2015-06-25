@@ -58,7 +58,7 @@ function run(database, urlsCol, hostnamesCol, target){
                         function(err){
                             if (err) {console.log(err);}
                             else {
-                                db.collection(urlsCol).update({}, {$set: {integrate: 1}}, {multi:true}, function (err) {
+                                db.collection(urlsCol).update({integrate:0}, {$set: {integrate: 1}}, {multi:true}, function (err) {
                                     if (err) console.log(err);
                                     console.log('done');
                                     db.close();
