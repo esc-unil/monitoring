@@ -40,7 +40,7 @@ function run(database, urlsCol, hostnamesCol, target){
                                         cb()
                                     }
                                     else {
-                                        var screenHostname = hostname._id + '.jpg';
+                                        var screenHostname = hostname._id + '.png';
                                         var screen = monitoring.screenshotFolder + '/' + screenHostname;
                                         screenshot(hostname._id, screen, function (err) {
                                             if (err) {hostname.screenshot = null;}

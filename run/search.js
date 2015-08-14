@@ -39,7 +39,7 @@ function requests(db, item, callback){
             try {
                 item.fct(db, keyword, item.num, item.opt_args, function (err, res) {
                     if (err) {
-                        console.log(item.fct.name + '-' + item.keyword + ': erreur');
+                        console.log(item.keyword + ': erreur');
                     }
                     else {
                         var nbResults = 0;
@@ -54,12 +54,12 @@ function requests(db, item, callback){
                     cb();
                 });
             } catch(err) {
-                console.log('ERREUR ' + item.platform + ' > ' + item.fct.name + ' > ' + keyword);
+                console.log('ERREUR ' + item.platform + ' > ' + keyword);
                 cb();
             }
         },
         function (){
-            console.log(item.platform + ' > ' + item.fct.name + ': done');
+            console.log(item.platform + ' > '  + ': done');
             console.log('------------------------------------------------------');
             callback()
         }
