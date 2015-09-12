@@ -44,4 +44,4 @@ function dom(string, callback){ //parse le code source string -> json
 exports.headersNbody = headersNbody;
 
 
-//headersNbody('unil.ch', function (a,b,c) {console.log(JSON.stringify(c));});
+//headersNbody('uvcvncvncvncvnbvcc6chcnil.ch', function (a,b,c) {console.log(JSON.stringify(c));});
