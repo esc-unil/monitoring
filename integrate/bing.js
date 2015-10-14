@@ -54,7 +54,7 @@ function getURL(db, col, target, callback) {
                         function (err) {
                             if (err) {console.log(err);}
                             db.collection('bing').update({_id: obj._id}, {$set: {integrate: 1}}, function (err) {
-                                if (err) console.log(obj._id, err);
+                                if (err) {console.log(obj._id, err);}
                                 cbObj()
                             });
                         }

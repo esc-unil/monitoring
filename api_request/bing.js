@@ -90,8 +90,12 @@ function go(type, args, callback) {
         function (item, callback) {
             args.top = item.num;
             args.skip = item.start;
-            search(type, args, callback);
+            setTimeout(function () {
+                search(type, args, callback);
+            }, 1000);
         },
+            //search(type, args, callback);
+       // },
         function (err, response) {
             if (err) {callback(err);}
             else {callback(null, response);}
