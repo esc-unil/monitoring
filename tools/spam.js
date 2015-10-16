@@ -9,7 +9,7 @@ var mongoClient = require('mongodb').MongoClient;
 var fs=require('fs');
 
 var mongoPath = 'mongodb://localhost:27017/spam';
-var year = '2006';
+var year = '2014';
 var path = '/Users/Thomas/Desktop/spam/'+year;
 
 mongoClient.connect(mongoPath, function(err, db) {
