@@ -7,6 +7,7 @@
 var request = require('request');
 var htmlparser = require("htmlparser");
 var http = require('http');
+var https = require('https');
 
 
 function headersNbody(hostname, callback){
@@ -41,7 +42,20 @@ function dom(string, callback){ //parse le code source string -> json
     parser.parseComplete(string);
 }
 
+function sslCertificate(options, callback){
+// retourne le certificat d'une page https. (options: {host, port}
+    if (typeof(options)==='string'){options = {host:options};}
+    if (options.port === undefined) {options.port = 443;}
+    if (options.method === undefined) {options.method = 'GET';}
+    var req = https.request(options, function(res) {
+        callback(res.connection.getPeerCertificate());
+    });
+    req.end();
+}
 exports.headersNbody = headersNbody;
 
 
 //headersNbody('uvcvncvncvncvnbvcc6chcnil.ch', function (a,b,c) {console.log(JSON.stringify(c));});
+
+//sslCertificate('unil.ch',function(res){console.log(res)});
+
