@@ -26,40 +26,24 @@ function getURL(db, col, target, callback) {
                                     urls,
                                     function (url, cbUrl) {
                                         var hostname = urlparse(url).hostname;
-                                        var id = 'facebook;' + obj.type + ';' + item.id + ';' + hostname;
-                                        db.collection(col).find({_id:id}).toArray(function (err, elem) {
-                                            if (err) cbUrl();
-                                            else {
-                                                elem = elem[0];
-                                                if (elem === undefined){ // pas encore le hostname/type
-                                                    var result = {
-                                                        _id: id,
-                                                        urls: [url],
-                                                        hostname: hostname,
-                                                        keywords: [obj.keywords],
-                                                        date: obj.date,
-                                                        platform: 'facebook',
-                                                        type: obj.type,
-                                                        info: {
-                                                            date1: obj.date,
-                                                            date2: obj.date,
-                                                            id: item.id,
-                                                            name: item.name,
-                                                            location: item.location,
-                                                            phone: item.phone,
-                                                            url: item.link
-                                                        },
-                                                        integrate: 0
-                                                    };
-                                                    db.collection(col).insert(result, function(err){cbUrl();});
-                                                }
-                                                else { //mise a jour pour le hostname/type
-                                                    var add = {$addToSet: {urls: url, keywords: obj.keywords}};
-                                                    if (elem.info.date2 < obj.date){add['$set'] = {'info.date2': obj.date}}
-                                                    db.collection(col).update({_id: id}, add, function(err){cbUrl();});
-                                                }
-                                            }
-                                        });
+                                        var result = {
+                                            urls: url,
+                                            hostname: hostname,
+                                            keywords: obj.keywords,
+                                            date: obj.date,
+                                            platform: 'facebook',
+                                            type: obj.type,
+                                            source: obj._id,
+                                            info: {
+                                                id: item.id,
+                                                name: item.name,
+                                                location: item.location,
+                                                phone: item.phone,
+                                                url: item.link
+                                            },
+                                            integrate: 0
+                                        };
+                                        db.collection(col).insert(result, function(err){cbUrl();});
                                     },
                                     function (err) {cbItem();}
                                 );

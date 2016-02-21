@@ -39,7 +39,6 @@ function search(fct, db, keyword, num, opt_args, callback){
                 delete response.result[i].pagemap;
                 result.push(response.result[i]);
             }
-            response._id = response.type + ';' + response.keywords + ';' + response.date.toISOString();
             response.result = result;
             response.integrate = 0;
             db.collection('google').insert(response, callback);

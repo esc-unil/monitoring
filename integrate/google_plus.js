@@ -38,37 +38,24 @@ function getPost(db, col, target, callback) {
                             urls,
                             function (url, cbUrl) {
                                 var hostname = urlparse(url).hostname;
-                                var id = 'google_plus;' + obj.type + ';' + obj.result.id + ';' + hostname;
-                                db.collection(col).find({_id:id}).toArray(function (err, elem) {
-                                    if (err) cbUrl();
-                                    else {
-                                        elem = elem[0];
-                                        if (elem === undefined){ // pas encore le hostname/type
-                                            var result = {
-                                                _id: id,
-                                                urls: [url],
-                                                hostname: hostname,
-                                                keywords: [obj.keywords],
-                                                date: obj.date,
-                                                platform: 'google_plus',
-                                                type: obj.type,
-                                                info: {
-                                                    date: obj.result.published,
-                                                    id: obj.result.id,
-                                                    author: obj.result.actor.displayName,
-                                                    author_id: obj.result.actor.id,
-                                                    url : obj.result.url
-                                                },
-                                                integrate: 0
-                                            };
-                                            db.collection(col).insert(result, function(err){cbUrl();});
-                                        }
-                                        else { //mise a jour pour le hostname/type
-                                            var add = {$addToSet: {urls: url, keywords: obj.keywords}};
-                                            db.collection(col).update({_id: id}, add, function(err){cbUrl();});
-                                        }
-                                    }
-                                });
+                                var result = {
+                                    urls: url,
+                                    hostname: hostname,
+                                    keywords: obj.keywords,
+                                    date: obj.date,
+                                    platform: 'google_plus',
+                                    type: obj.type,
+                                    source: obj._id,
+                                    info: {
+                                        date: obj.result.published,
+                                        id: obj.result.id,
+                                        author: obj.result.actor.displayName,
+                                        author_id: obj.result.actor.id,
+                                        url : obj.result.url
+                                    },
+                                    integrate: 0
+                                };
+                                db.collection(col).insert(result, function(err){cbUrl();});
                             },
                             function (err) {
                                 db.collection('google_plus').update({_id: obj._id}, {$set: {integrate: 1}}, function (err) {
@@ -104,38 +91,22 @@ function getUsers(db, col, target, callback) {
                                     urls,
                                     function (url, cbUrl) {
                                         var hostname = urlparse(url).hostname;
-                                        var id = 'google_plus;' + obj.type + ';' + item.id + ';' + hostname;
-                                        db.collection(col).find({_id:id}).toArray(function (err, elem) {
-                                            if (err) cbUrl();
-                                            else {
-                                                elem = elem[0];
-                                                if (elem === undefined){ // pas encore le hostname/type
-                                                    var result = {
-                                                        _id: id,
-                                                        urls: [url],
-                                                        hostname: hostname,
-                                                        keywords: [obj.keywords],
-                                                        date: obj.date,
-                                                        platform: 'google_plus',
-                                                        type: obj.type,
-                                                        info: {
-                                                            date1: obj.date,
-                                                            date2: obj.date,
-                                                            name: item.displayName,
-                                                            id: item.id,
-                                                            url: item.url
-                                                        },
-                                                        integrate: 0
-                                                    };
-                                                    db.collection(col).insert(result, function(err){cbUrl();});
-                                                }
-                                                else { //mise a jour pour le hostname/type
-                                                    var add = {$addToSet: {urls: url, keywords: obj.keywords}};
-                                                    if (elem.info.date2 < obj.date){add['$set'] = {'info.date2': obj.date}}
-                                                    db.collection(col).update({_id: id}, add, function(err){cbUrl();});
-                                                }
-                                            }
-                                        });
+                                        var result = {
+                                            urls: url,
+                                            hostname: hostname,
+                                            keywords: obj.keywords,
+                                            date: obj.date,
+                                            platform: 'google_plus',
+                                            type: obj.type,
+                                            source: obj._id,
+                                            info: {
+                                                name: item.displayName,
+                                                id: item.id,
+                                                url: item.url
+                                            },
+                                            integrate: 0
+                                        };
+                                        db.collection(col).insert(result, function(err){cbUrl();});
                                     },
                                     function (err) {cbItem();}
                                 );

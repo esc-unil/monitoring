@@ -22,37 +22,24 @@ function getURL(db, col, target, callback) {
                             urls,
                             function(url, cbUrl){
                                 var hostname = urlparse(url).hostname;
-                                var id = 'reddit;' + obj.type + ';' + obj.result.name + ';' + hostname;
-                                db.collection(col).find({_id:id}).toArray(function (err, elem) {
-                                    if (err) cbUrl();
-                                    else {
-                                        elem = elem[0];
-                                        if (elem === undefined){ // pas encore le hostname/type
-                                            var result = {
-                                                _id: id,
-                                                urls: [url],
-                                                hostname: hostname,
-                                                keywords: [obj.keywords],
-                                                date: obj.date,
-                                                platform: 'reddit',
-                                                type: obj.type,
-                                                info: {
-                                                    date: obj.result.created,
-                                                    id: obj.result.name,
-                                                    author: obj.result.author,
-                                                    subreddit:obj.result.subreddit,
-                                                    url: obj.result.url
-                                                },
-                                                integrate: 0
-                                            };
-                                            db.collection(col).insert(result, function(err){cbUrl();});
-                                        }
-                                        else { //mise a jour pour le hostname/type
-                                            var add = {$addToSet: {urls: url, keywords: obj.keywords}};
-                                            db.collection(col).update({_id: id}, add, function(err){cbUrl();});
-                                        }
-                                    }
-                                });
+                                var result = {
+                                    urls: url,
+                                    hostname: hostname,
+                                    keywords: obj.keywords,
+                                    date: obj.date,
+                                    platform: 'reddit',
+                                    type: obj.type,
+                                    source: obj._id,
+                                    info: {
+                                        date: obj.result.created,
+                                        id: obj.result.name,
+                                        author: obj.result.author,
+                                        subreddit:obj.result.subreddit,
+                                        url: obj.result.url
+                                    },
+                                    integrate: 0
+                                };
+                                db.collection(col).insert(result, function(err){cbUrl();});
                             },
                             function(err){
                                 db.collection('reddit').update({_id: obj._id}, {$set: {integrate: 1}}, function (err) {

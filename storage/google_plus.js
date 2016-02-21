@@ -53,7 +53,6 @@ function usersSearch(db, keyword, num, opt_args, callback){
     gplus.usersSearch(keyword, num, opt_args, function(err, response){
         if (err) callback(err);
         else {
-            response._id = response.type + ';' + response.keywords + ';' + response.date.toISOString();
             response.integrate = 0;
             db.collection('google_plus').insert(response, callback);
         }
@@ -80,7 +79,6 @@ function activitiesSearch(fct, db, keyword, num, opt_args, callback){
         else {
             var results = [];
             for (var i = 0; i < response.length; i++) {
-                response[i]._id = response[i].type + ';' + response[i].keywords + ';' + response[i].result.id;
                 response[i].integrate = 0;
                 results.push(response[i]);
             }
@@ -110,7 +108,6 @@ function searchNew(fct, db, keyword, num, opt_args, callback){
                     var results = [];
                     for (var i = 0; i < response.length; i++) {
                         if (response[i].result.published > lastPost) {
-                            response[i]._id = response[i].type + ';' + response[i].keywords + ';' + response[i].result.id;
                             response[i].integrate = 0;
                             results.push(response[i]);
                         }

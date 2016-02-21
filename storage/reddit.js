@@ -38,7 +38,6 @@ function subredditSearch(db, keyword, num, subreddit, opt_args, callback){
         else {
             var results = [];
             for (var i = 0; i < response.length; i++) {
-                response[i]._id = response[i].type + ';' + response[i].keywords + ';' + response[i].result.name;
                 response[i].integrate = 0;
                 results.push(response[i]);
             }

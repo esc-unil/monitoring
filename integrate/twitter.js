@@ -33,42 +33,29 @@ function getPost(db, col, target, callback) {
                                 urls,
                                 function (url, cbUrl) {
                                     var hostname = urlparse(url).hostname;
-                                    var id = 'twitter;' + obj.type + ';' + obj.result.id_str + ';' + hostname;
                                     var retweet = false;
                                     if (obj.result.retweeted_status != undefined){retweet=true;}
-                                    db.collection(col).find({_id:id}).toArray(function (err, elem) {
-                                        if (err) cbUrl();
-                                        else {
-                                            elem = elem[0];
-                                            if (elem === undefined){ // pas encore le hostname/type
-                                                var result = {
-                                                    _id: id,
-                                                    urls: [url],
-                                                    hostname: hostname,
-                                                    keywords: [obj.keywords],
-                                                    date: obj.date,
-                                                    platform: 'twitter',
-                                                    type: obj.type,
-                                                    info: {
-                                                        date: obj.result.created_at,
-                                                        id: obj.result.id_str,
-                                                        author: obj.result.user.screen_name,
-                                                        author_id: obj.result.user.id_str,
-                                                        location: obj.result.place,
-                                                        coordinates: obj.result.coordinates,
-                                                        lang : obj.result.lang,
-                                                        retweet: retweet
-                                                    },
-                                                    integrate: 0
-                                                };
-                                                db.collection(col).insert(result, function(err){cbUrl();});
-                                            }
-                                            else { //mise a jour pour le hostname/type
-                                                var add = {$addToSet: {urls: url, keywords: obj.keywords}};
-                                                db.collection(col).update({_id: id}, add, function(err){cbUrl();});
-                                            }
-                                        }
-                                    });
+                                    var result = {
+                                        urls: url,
+                                        hostname: hostname,
+                                        keywords: obj.keywords,
+                                        date: obj.date,
+                                        platform: 'twitter',
+                                        type: obj.type,
+                                        source: obj._id,
+                                        info: {
+                                            date: obj.result.created_at,
+                                            id: obj.result.id_str,
+                                            author: obj.result.user.screen_name,
+                                            author_id: obj.result.user.id_str,
+                                            location: obj.result.place,
+                                            coordinates: obj.result.coordinates,
+                                            lang : obj.result.lang,
+                                            retweet: retweet
+                                        },
+                                        integrate: 0
+                                    };
+                                    db.collection(col).insert(result, function(err){cbUrl();});
                                 },
                                 function (err) {
                                     db.collection('twitter').update({_id: obj._id}, {$set: {integrate: 1}}, function (err) {
@@ -109,42 +96,25 @@ function getUsers(db, col, target, callback) {
                                     urls,
                                     function (url, cbUrl) {
                                         var hostname = urlparse(url).hostname;
-                                        var id = 'twitter;' + obj.type + ';' + item.id_str + ';' + hostname;
-
-                                        db.collection(col).find({_id:id}).toArray(function (err, elem) {
-                                            if (err) cbUrl();
-                                            else {
-                                                elem = elem[0];
-                                                if (elem === undefined){ // pas encore le hostname/type
-                                                    var result = {
-                                                        _id: id,
-                                                        urls: [url],
-                                                        hostname: hostname,
-                                                        keywords: [obj.keywords],
-                                                        date: obj.date,
-                                                        platform: 'twitter',
-                                                        type: obj.type,
-                                                        info: {
-                                                            date1: obj.date,
-                                                            date2: obj.date,
-                                                            id: item.id_str,
-                                                            name: item.screen_name,
-                                                            date: new Date(item.created_at),
-                                                            location: item.location,
-                                                            timezone: item.time_zone,
-                                                            lang : item.lang
-                                                        },
-                                                        integrate: 0
-                                                    };
-                                                    db.collection(col).insert(result, function(err){cbUrl();});
-                                                }
-                                                else { //mise a jour pour le hostname/type
-                                                    var add = {$addToSet: {urls: url, keywords: obj.keywords}};
-                                                    if (elem.info.date2 < obj.date){add['$set'] = {'info.date2': obj.date}}
-                                                    db.collection(col).update({_id: id}, add, function(err){cbUrl();});
-                                                }
-                                            }
-                                        });
+                                        var result = {
+                                            urls: url,
+                                            hostname: hostname,
+                                            keywords: [obj.keywords],
+                                            date: obj.date,
+                                            platform: 'twitter',
+                                            type: obj.type,
+                                            source: obj._id,
+                                            info: {
+                                                id: item.id_str,
+                                                name: item.screen_name,
+                                                date: new Date(item.created_at),
+                                                location: item.location,
+                                                timezone: item.time_zone,
+                                                lang : item.lang
+                                            },
+                                            integrate: 0
+                                        };
+                                        db.collection(col).insert(result, function(err){cbUrl();});
                                     },
                                     function (err) {cbItem();}
                                 );
@@ -166,4 +136,3 @@ function getUsers(db, col, target, callback) {
 }
 
 exports.getURL = getURL;
-

@@ -23,34 +23,21 @@ function getURL(db, col, target, callback) {
                             urls,
                             function(url, cbUrl){
                                 var hostname = urlparse(url).hostname;
-                                var id = 'youtube;' + obj.type + ';' + obj.result.id.videoId + ';' + hostname;
-                                db.collection(col).find({_id:id}).toArray(function (err, elem) {
-                                    if (err) cbUrl();
-                                    else {
-                                        elem = elem[0];
-                                        if (elem === undefined){ // pas encore le hostname/type
-                                            var result = {
-                                                _id: id,
-                                                urls: [url],
-                                                hostname: hostname,
-                                                keywords: [obj.keywords],
-                                                date: obj.date,
-                                                platform: 'youtube',
-                                                type: obj.type,
-                                                info: {
-                                                    date: obj.result.snippet.publishedAt,
-                                                    id: obj.result.id.videoId
-                                                },
-                                                integrate: 0
-                                            };
-                                            db.collection(col).insert(result, function(err){cbUrl();});
-                                        }
-                                        else { //mise a jour pour le hostname/type
-                                            var add = {$addToSet: {urls: url, keywords: obj.keywords}};
-                                            db.collection(col).update({_id: id}, add, function(err){cbUrl();});
-                                        }
-                                    }
-                                });
+                                var result = {
+                                    urls: url,
+                                    hostname: hostname,
+                                    keywords: obj.keywords,
+                                    date: obj.date,
+                                    platform: 'youtube',
+                                    type: obj.type,
+                                    source: obj._id,
+                                    info: {
+                                        date: obj.result.snippet.publishedAt,
+                                        id: obj.result.id.videoId
+                                    },
+                                    integrate: 0
+                                };
+                                db.collection(col).insert(result, function(err){cbUrl();});
                             },
                             function(err){
                                 db.collection('youtube').update({_id: obj._id}, {$set: {integrate: 1}}, function (err) {
