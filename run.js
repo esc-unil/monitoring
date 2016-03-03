@@ -2,12 +2,13 @@
 /**
  * Created by tpineau
  *
- * Programme de lancement des différentes requêtes via les API des plateformes.  Les données brutes retournée sont stockées
+ * Programme de lancement des différentes requêtes via les API des plateformes.  Les données brutes retournées sont stockées
  * dans une base de donnée MongoDB.
  *
  */
 
 var log=require('./log.js');
+var mongoClient = require('mongodb').MongoClient;
 
 var db = null; // URL of the MongoDB database (ie mongodb://[username:password@]hostname[:port1]/database[?options])
 var dbName = null; //database name (ex:doping, docs)
