@@ -26,5 +26,3 @@ function log(type, message) {
 exports.insert = insert;
 exports.error = error;
 
-error('asdasdad');
-insert('aaaffffffff');
