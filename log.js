@@ -3,7 +3,7 @@
  * Created by tpineau
  */
 
-var logPath = "/var/log/webintell";
+var logPath = "./log";
 var fs    = require('fs');
 
 
