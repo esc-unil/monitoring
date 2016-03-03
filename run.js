@@ -14,7 +14,7 @@ var db = null; // URL of the MongoDB database (ie mongodb://[username:password@]
 var dbName = null; //database name (ex:doping, docs)
 var api = null; //API name (google, bing, yahoo, twitter, facebook, gplus, youtube, reddit, etc.)
 var keys = null; //JSON with the different API keys
-var type = null; //request type (i.e post or user for Twitter, web, images for Google)
+var type = null; //request type (i.e post or user for Twitter // web, images for Google // subreddit name for reddit)
 var request = null; //string for the request
 var number = null; //number of desired outcomes
 var options = null; //[OPTIONAL] JSON with the optional arguments (see the specific API reference)
@@ -22,10 +22,15 @@ var help = '\nInformation sur les arguments:\n\n' +
             '-d ou -db          URL de la base de donnee (ex: mongodb://[username:password@]hostname[:port1]/database)\n' +
             '-a ou -api         Nom de la plate-forme fournissant l\'API: (\n' +
             '                       google, bing, yahoo, facebook, twitter, google_plus, youtube ou reddit\n' +
-            '-k ou -keys        [Optionnel] JSON contenant les clefs de l\'API\n' +
-            '-t ou -type        Le type de la requete (ex: post ou user pour Twitter, ou web ou images pour Google)\n' +
-            '-r ou -request     La requete a effectu�e (mots-clefs)\n' +
+            '-k ou -keys        JSON contenant les clefs de l\'API\n' +
+            '-r ou -request     La requete a effectuee (mots-clefs)\n' +
             '-n ou -number      Nombre de resultats attendus\n' +
+            '-t ou -type        [Optionnel] Le type de la requete (ex: post ou user pour Twitter, ou web ou images pour Google)\n' +
+            '                       web ou images, pour google, bing and yahoo (defaut: web)\n' +
+            '                       user pour facebook (defaut: user)\n' +
+            '                       user ou post pour twitter, google_plus (defaut: post)\n' +
+            '                       video pour youtube (defaut: video)\n' +
+            '                       [nom d\'un subreddit] pour reddit (defaut: null)\n' +
             '-o ou -options     [Optionnel] JSON contenant les differents arguments pour la requete (voir la documentation de l\'API)\n'
     ;
 
@@ -104,11 +109,13 @@ try {
 } catch (e) {
     keys = null;
 }
+
 try {
     options =JSON.parse(options)
 } catch (e) {
     options = null;
 }
+
 try {
     number = parseInt(number);
 } catch (e) {
@@ -122,11 +129,12 @@ try{
     db = null;
 }
 
-if (db == null || api == null || type == null || request == null || number == null){
-    log.error('RUN bad request - Missing argument(s) - ' + dbName + ';' + api + ';' + type + ';' + request);
+if (db == null || api == null || request == null || number == null){
+    log.error('RUN bad request - Missing argument(s) - ' + dbName + ';' + api + ';' + request);
     process.exit();
 }
 
+var platform = api.toLowerCase();
 switch (api.toLowerCase()){
     case 'google':
         api = require('./storage/google.js');
@@ -153,12 +161,22 @@ switch (api.toLowerCase()){
         api = require('./storage/reddit.js');
         break;
     default:
-        log.error('RUN bad request - Wrong API argument - ' + dbName + ';' + api + ';' + type + ';' + request);
+        log.error('RUN bad request - Wrong API argument - ' + dbName + ';' + api + ';' + request);
         process.exit();
 }
 
 
-console.log(api);
+//--------------------------------------------------------------------------------------
+mongoClient.connect(db, function(err, database) {
+    if (platform === 'reddit'){
+        if (type.toLowerCase() == 'null' || type == ''){
+            type = null;
+        }
+        api(database, request, number, type, options, cb); //!!!!!!!!!!!!in progress
+    } else {
+        api[type](database, request, number, options, cb);
+    }
+});
 
 
 
