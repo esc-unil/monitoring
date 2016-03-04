@@ -172,12 +172,22 @@ mongoClient.connect(db, function(err, database) {
         if (type.toLowerCase() == 'null' || type == ''){
             type = null;
         }
-        api(database, request, number, type, options, cb); //!!!!!!!!!!!!in progress
+        api(database, request, number, type, options, function(err, message){
+            if (err){
+                log.error(err);
+            } else {
+                log.insert('SUCCESS - ' + dbName + ' ' + platform + ' ' + request +'\n')
+            }
+        });
     } else {
-        api[type](database, request, number, options, cb);
+        api[type](database, request, number, options, function(err, message){
+            if (err){
+                log.error(err);
+            } else {
+                log.insert('SUCCESS - ' + dbName + ' ' + platform + ' ' + type + ' ' + request +'\n')
+            }
+        });
     }
 });
-
-
 
 //--------------------------------------------------------------------------------------
