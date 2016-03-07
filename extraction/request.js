@@ -16,7 +16,7 @@ function headersNbody(hostname, callback){
         method: "GET",
         url: url,
         followAllRedirects: true,
-        timeout: 10000,
+        timeout: 20000,
         rejectUnauthorized: false,
         requestCert: true,
         pool:  new http.Agent({'maxSockets': Infinity}),
@@ -33,6 +33,14 @@ function headersNbody(hostname, callback){
     }).setMaxListeners(0);
 }
 
+function body(hostname, callback){
+    headersNbody(hostname, function(err, headers, body){callback(err, body);});
+}
+
+function headers(hostname, callback){
+    headersNbody(hostname, function(err, headers, body){callback(err, headers);});
+}
+
 function dom(string, callback){ //parse le code source string -> json
     var handler = new htmlparser.DefaultHandler(function (err, dom) {
         if (err) {callback(err);}
@@ -42,20 +50,29 @@ function dom(string, callback){ //parse le code source string -> json
     parser.parseComplete(string);
 }
 
-function sslCertificate(options, callback){
+function sslCertificate(options, callback) {
 // retourne le certificat d'une page https. (options: {host, port}
-    if (typeof(options)==='string'){options = {host:options};}
-    if (options.port === undefined) {options.port = 443;}
-    if (options.method === undefined) {options.method = 'GET';}
-    var req = https.request(options, function(res) {
-        callback(res.connection.getPeerCertificate());
+
+    if (typeof(options) === 'string') {
+        options = {host: options};
+    }
+    if (options.port === undefined) {
+        options.port = 443;
+    }
+    if (options.method === undefined) {
+        options.method = 'GET';
+    }
+
+    var req = https.request(options, function (res) {
+        callback(null, res.connection.getPeerCertificate());
     });
+    req.on('error', function(err){callback(err); req.end();});
     req.end();
 }
 exports.headersNbody = headersNbody;
-
-
+exports.sslCertificate = sslCertificate;
+exports.headers = headers;
+exports.body = body;
 //headersNbody('uvcvncvncvncvnbvcc6chcnil.ch', function (a,b,c) {console.log(JSON.stringify(c));});
-
-//sslCertificate('unil.ch',function(res){console.log(res)});
+//sslCertificate('unil.ch', function (err, res) {console.log(res)});
 

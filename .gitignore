@@ -6,6 +6,7 @@ monitoring.json
 run/dopingsearch.js
 run/dopingsearchSN.js
 run/test.js
+run/test2.js
 run/hostnamesbis.js
 classification
 extraction/webshot
