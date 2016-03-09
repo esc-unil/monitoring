@@ -64,9 +64,8 @@ function sslCertificate(options, callback) {
     }
 
     var req = https.request(options, function (res) {
-        callback(null, res.connection.getPeerCertificate());
+        callback(res.connection.getPeerCertificate());
     });
-    req.on('error', function(err){callback(err); req.end();});
     req.end();
 }
 exports.headersNbody = headersNbody;

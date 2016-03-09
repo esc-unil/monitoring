@@ -16,49 +16,47 @@ function run(database, fromCollection, toCollection, category){
     var mongoPath = 'mongodb://localhost:27017/' + database;
     mongoClient.connect(mongoPath, function (err, db) {
         if (err){console.log(err);}
-        else {
-            db.collection(fromCollection).find({category:category}).limit(10).toArray(function (err, res) {
+        else db.collection(fromCollection).find({category: category}).toArray(function (err, res) {
                 async.eachSeries(
                     res,
-                    function(item, cb){
+                    function (item, cb) {
                         var obj = {
                             hostname: item._id,
-                            domain : item.domain
+                            domain: item.domain
                         };
-                        var name='';
-                        async.eachSeries(
-                            [dns.ips, dns.mx, dns.ns, request.headers, request.body],//, request.sslCertificate],
-                            function (f, cbf){
-                                if (f==dns.ips){name='ip';}
-                                else if (f==dns.mx){name='mx';}
-                                else if (f==dns.ns){name='ns';}
-                                else if (f==request.headers){name='headers';}
-                                else if (f==request.body){name='body';}
-                                else if (f==request.sslCertificate){name='sslCertificate';}
-                                f(obj.hostname, function (err, res){
-                                    if (err || res==null) {cbf();}
-                                    obj[name] = res;
-                                    //db.collection(toCollection).insert(i, function(err){cbf();});
-                                    cbf();
-                                });
-                            },
-                            function (err){
-                                if (err){console.log(err);}
-                                obj.date = new Date;
-                                db.collection(toCollection).insert(obj, function(err){cb();});
-                                //console.log(obj); cb();
+                        dns.ips(obj.hostname, function (err, resp) {
+                            if (!err && resp[0] != undefined) {
+                                obj.ip = resp;
                             }
-                        );
+                            dns.mx(obj.hostname, function (err, resp) {
+                                if (!err) {
+                                    obj.mx = resp;
+                                }
+                                dns.ns(obj.hostname, function (err, resp) {
+                                    if (!err) {
+                                        obj.ns = resp;
+                                    }
+                                    request.headersNbody(obj.hostname, function (err, headers, body) {
+                                        if (!err) {
+                                            obj.headers = headers;
+                                            obj.body = body;
+                                        }
+                                        obj.date = new Date();
+                                        db.collection(toCollection).insert(obj, function (err) {
+                                            console.log(obj.hostname);
+                                            cb();
+                                        });
+                                    });
+                                });
+                            });
+                        });
                     },
-                    function(err){
-                        console.log('done1');
-                        db.close();
-                    }
-                );
-
-
-            });
-        }
+            function (err) {
+                console.log('done :)');
+                db.close();
+            }
+        );
+     });
     });
 }
 
